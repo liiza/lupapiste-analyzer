@@ -1,8 +1,3 @@
-from datetime import datetime
-
-
-def to_date(s):
-    return datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
 
 
 def diff(applications, start, end, param):

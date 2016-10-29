@@ -1,25 +1,5 @@
+from cell_names import *
 from data_helpers import *
-
-DATE = 'date'
-USER_ID = 'userId'
-ROLE = 'role'
-MUNICIPALITY = 'municipality'
-APPLICATION_ID = 'applicationId'
-ACTION = 'action'
-TARGET = 'target'
-IS_INFO_REQUEST = "isInfoRequest"
-OPERATION = "operation"
-COLUMNS = [DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET]
-
-SUBMIT_APPLICATION = 'submit-application'
-GIVE_STATEMENT = 'give-statement'
-APPLICANT = 'applicant'
-AUTHORITY = 'authority'
-
-START_TIME = 'start-time'
-ACTION_COUNT = 'action-count'
-TIME = 'time'
-FILLING_TIME = 'filling-time'
 
 
 class LogEntryAnalyzer:
@@ -28,25 +8,6 @@ class LogEntryAnalyzer:
         self.get_filling_time = get_filling_time
         self.filter_by_operation = filter_by_operation
         self.filter_by = filter_by
-
-    def to_cells(self, line):
-        chunks = line.split(";")
-        return {DATE: to_date(chunks[COLUMNS.index(DATE)]),
-                ROLE: chunks[COLUMNS.index(ROLE)],
-                MUNICIPALITY: chunks[COLUMNS.index(MUNICIPALITY)],
-                APPLICATION_ID: chunks[COLUMNS.index(APPLICATION_ID)],
-                ACTION: chunks[COLUMNS.index(ACTION)],
-                OPERATION: chunks[COLUMNS.index(OPERATION)]}
-
-    def to_log_entries(self, data):
-        header = True
-        data_entries = []
-        for line in data:
-            if header:
-                header = False
-                continue
-            data_entries.append(self.to_cells(line))
-        return data_entries
 
     def get_or_create_application(self, application_id, applications, log_entry):
         if applications.has_key(application_id):

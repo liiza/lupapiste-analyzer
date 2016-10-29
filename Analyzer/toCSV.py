@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from csv_reader import CSVReader
 from log_entry_analyzer import *
 
 GET_ACTION_COUNT = False
@@ -65,9 +66,10 @@ def main():
     data_file, params, filter_by = read_conf()
     set_params(params, filter_by)
     print "log_entries"
-    analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
-    log_entries = analyzer.to_log_entries(open(data_file, 'r'))
+    csv_reader = CSVReader([DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET])
+    log_entries = csv_reader.to_log_entries(open(data_file, 'r'))
     print "applications"
+    analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
     applications = analyzer.to_applications(log_entries)
     if GET_FILLING_TIME:
         applications = analyzer.to_applications_with_filling_time(applications)

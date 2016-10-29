@@ -1,0 +1,17 @@
+DATE = 'date'
+USER_ID = 'userId'
+ROLE = 'role'
+MUNICIPALITY = 'municipality'
+APPLICATION_ID = 'applicationId'
+ACTION = 'action'
+TARGET = 'target'
+IS_INFO_REQUEST = "isInfoRequest"
+OPERATION = "operation"
+SUBMIT_APPLICATION = 'submit-application'
+GIVE_STATEMENT = 'give-statement'
+APPLICANT = 'applicant'
+AUTHORITY = 'authority'
+START_TIME = 'start-time'
+ACTION_COUNT = 'action-count'
+TIME = 'time'
+FILLING_TIME = 'filling-time'
