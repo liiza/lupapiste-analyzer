@@ -5,9 +5,12 @@ from log_entry_analyzer import *
 GET_ACTION_COUNT = False
 GET_FILLING_TIME = False
 FILTER_BY_OPERATION = False
+FILTER_BY = ""
 
 
 def read_conf():
+    params = ""
+    filter_by = ""
     with open('conf', 'r') as f:
         contents = []
         for line in f:
@@ -16,26 +19,28 @@ def read_conf():
             contents.append(line)
         if len(contents) < 0:
             raise ValueError("no data file name given")
-        params = ""
         if len(contents) > 1:
             params = contents[1]
-    return contents[0].strip(), params
+        if len(contents) > 2:
+            filter_by = contents[2].strip()
+    return contents[0].strip(), params, filter_by
 
 
-def set_params(params):
-    global GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION
+def set_params(params, filter_by):
+    global GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY
     GET_ACTION_COUNT = params.find(ACTION_COUNT) >= 0
-    GET_FILLING_TIME = params.find(FILLING_TIME) >= 0
-    FILTER_BY_OPERATION = params.find("filter") >= 0
     if GET_ACTION_COUNT:
         print ACTION_COUNT
+    GET_FILLING_TIME = params.find(FILLING_TIME) >= 0
     if GET_FILLING_TIME:
         print FILLING_TIME
+    FILTER_BY_OPERATION = len(filter_by) > 0
     if FILTER_BY_OPERATION:
-        print "filter"
+        FILTER_BY = filter_by
+        print "filter by " + FILTER_BY
 
 
-def to_CSV(applications):
+def to_csv(applications):
     lines = []
     header = [MUNICIPALITY, TIME]
     if GET_ACTION_COUNT:
@@ -57,10 +62,10 @@ def to_CSV(applications):
 
 
 def main():
-    data_file, params = read_conf()
-    set_params(params)
+    data_file, params, filter_by = read_conf()
+    set_params(params, filter_by)
     print "log_entries"
-    analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION)
+    analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
     log_entries = analyzer.to_log_entries(open(data_file, 'r'))
     print "applications"
     applications = analyzer.to_applications(log_entries)
@@ -72,7 +77,7 @@ def main():
     print len(applications)
     print len(applications_with_time)
     print "tocsv"
-    to_CSV(applications_with_time)
+    to_csv(applications_with_time)
 
 
 if __name__ == "__main__":

@@ -23,10 +23,11 @@ FILLING_TIME = 'filling-time'
 
 
 class LogEntryAnalyzer:
-    def __init__(self, get_action_count, get_filling_time, filter_by_operation):
+    def __init__(self, get_action_count, get_filling_time, filter_by_operation, filter_by):
         self.get_action_count = get_action_count
         self.get_filling_time = get_filling_time
         self.filter_by_operation = filter_by_operation
+        self.filter_by = filter_by
 
     def to_cells(self, line):
         chunks = line.split(";")
@@ -62,7 +63,7 @@ class LogEntryAnalyzer:
     def to_applications(self, log_entries):
         applications = {}
         for log_entry in log_entries:
-            if self.filter_by_operation and log_entry[OPERATION] != 'pientalo':
+            if self.filter_by_operation and log_entry[OPERATION] != self.filter_by:
                 continue
 
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
