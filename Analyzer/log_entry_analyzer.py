@@ -3,7 +3,6 @@ from itertools import groupby
 
 from cell_names import *
 from data_helpers import *
-from toCSV import to_municipality_application_pair, get_municipality
 
 
 class LogEntryAnalyzer:
@@ -60,10 +59,14 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def group_by_municipalities(applications_with_time):
-        municipality_row_map = map(to_municipality_application_pair(applications_with_time), applications_with_time)
+        municipality_row_map = map(LogEntryAnalyzer.to_municipality_application_pair(applications_with_time), applications_with_time)
         sorted_by_municipality = sorted(municipality_row_map, key=lambda entry: entry[0])
         grouped_by_municipality = groupby(sorted_by_municipality, lambda entry: entry[0])
         return grouped_by_municipality
+
+    @staticmethod
+    def to_municipality_application_pair(applications):
+        return lambda application_id: (applications[application_id][MUNICIPALITY], applications[application_id])
 
     @staticmethod
     def to_applications_with_filling_time(applications):
@@ -72,3 +75,11 @@ class LogEntryAnalyzer:
     @staticmethod
     def to_applications_with_time(applications):
         return getTimeDiffAs(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME)
+
+    @staticmethod
+    def filter_applications_with_biggest_municipalities(applications, amount):
+        municipalities_and_applications_counts = LogEntryAnalyzer.get_biggest_municipalities(applications, amount)
+        print "Biggest municipalities and applications " + str(municipalities_and_applications_counts)
+        municipalities = map(lambda t: t[0], municipalities_and_applications_counts)
+        return {k: v for k, v in applications.iteritems() if str(v[MUNICIPALITY]) in municipalities}
+        # return filter(lambda id: str(applications[id][MUNICIPALITY]) in municipalities, applications)

@@ -2,7 +2,6 @@
 
 from csv_reader import CSVFile
 from log_entry_analyzer import *
-from log_entry_analyzer import get_biggest_municipalities
 
 CONF_FILE = 'resources/conf'
 RESULT_FILE = 'resources/aws_file.csv'
@@ -62,10 +61,6 @@ def write_as_csv(applications):
         csv.write("\n".join(lines))
 
 
-def to_municipality_application_pair(applications):
-    return lambda application_id: (applications[application_id][MUNICIPALITY], applications[application_id])
-
-
 def main():
     data_file, params, filter_by = read_conf()
     set_params(params, filter_by)
@@ -77,17 +72,17 @@ def main():
         applications = analyzer.to_applications_with_filling_time(applications)
     applications_with_time = analyzer.to_applications_with_time(applications)
 
-    biggest_municipalities = LogEntryAnalyzer.get_biggest_municipalities(applications_with_time, 5)
+    applications_with_time_filtered = analyzer.filter_applications_with_biggest_municipalities(applications_with_time, 5)
 
-    log_statistics(applications, applications_with_time, biggest_municipalities, csv_file)
-    write_as_csv(applications_with_time)
+    log_statistics(applications, applications_with_time, applications_with_time_filtered, csv_file)
+    write_as_csv(applications_with_time_filtered)
 
 
-def log_statistics(applications, applications_with_time, biggest_municipalities, csv_file):
+def log_statistics(applications, applications_with_time, applications_with_time_filtered, csv_file):
     print str(len(csv_file.rows)) + " rows in csv file"
     print str(len(applications)) + " applications"
     print str(len(applications_with_time)) + " applications with statement"
-    print "Biggest municipalities and applications " + str(biggest_municipalities)
+    print str(len(applications_with_time_filtered)) + " applications filtered biggest municipalities"
 
 
 if __name__ == "__main__":
