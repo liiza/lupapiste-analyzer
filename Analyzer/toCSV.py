@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from csv_reader import CSVReader
+from csv_reader import CSVFile
 from log_entry_analyzer import *
 
 GET_ACTION_COUNT = False
@@ -41,7 +41,7 @@ def set_params(params, filter_by):
         print "filter by " + FILTER_BY
 
 
-def to_csv(applications):
+def write_as_csv(applications):
     lines = []
     header = [MUNICIPALITY, TIME]
     if GET_ACTION_COUNT:
@@ -65,21 +65,22 @@ def to_csv(applications):
 def main():
     data_file, params, filter_by = read_conf()
     set_params(params, filter_by)
-    print "log_entries"
-    csv_reader = CSVReader([DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET])
-    log_entries = csv_reader.to_log_entries(open(data_file, 'r'))
-    print "applications"
+
+    columns = [DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET]
+    csv_file = CSVFile(columns, open(data_file, 'r'))
+
     analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
-    applications = analyzer.to_applications(log_entries)
+    applications = analyzer.to_applications(csv_file.rows)
+
     if GET_FILLING_TIME:
         applications = analyzer.to_applications_with_filling_time(applications)
-    print "time"
     applications_with_time = analyzer.to_applications_with_time(applications)
-    print len(log_entries)
+
+    print len(csv_file.rows)
     print len(applications)
     print len(applications_with_time)
-    print "tocsv"
-    to_csv(applications_with_time)
+
+    write_as_csv(applications_with_time)
 
 
 if __name__ == "__main__":

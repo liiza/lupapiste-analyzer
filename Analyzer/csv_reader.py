@@ -2,13 +2,20 @@ from cell_names import *
 from datetime import datetime
 
 
-class CSVReader:
-    def __init__(self, columns):
+class CSVFile:
+    def __init__(self, columns, data):
         self.columns = columns
+        self.rows = self.to_rows(data)
 
-    @staticmethod
-    def to_date(s):
-        return datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
+    def to_rows(self, data):
+        header = True
+        data_entries = []
+        for line in data:
+            if header:
+                header = False
+                continue
+            data_entries.append(self.to_cells(line))
+        return data_entries
 
     def to_cells(self, line):
         chunks = line.split(";")
@@ -23,12 +30,6 @@ class CSVReader:
             value = self.to_date(value)
         return value
 
-    def to_log_entries(self, data):
-        header = True
-        data_entries = []
-        for line in data:
-            if header:
-                header = False
-                continue
-            data_entries.append(self.to_cells(line))
-        return data_entries
+    @staticmethod
+    def to_date(s):
+        return datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
