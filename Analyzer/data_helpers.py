@@ -1,6 +1,6 @@
 
 
-def diff(applications, start, end, param):
+def getTimeDiffAs(applications, start, end, param):
     applications_with_time = {}
     for application_id in applications:
         application = applications[application_id]

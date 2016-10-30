@@ -46,8 +46,10 @@ class LogEntryAnalyzer:
 
         return applications
 
-    def to_applications_with_filling_time(self, applications):
-        return diff(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME)
+    @staticmethod
+    def to_applications_with_filling_time(applications):
+        return getTimeDiffAs(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME)
 
-    def to_applications_with_time(self, applications):
-        return diff(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME)
+    @staticmethod
+    def to_applications_with_time(applications):
+        return getTimeDiffAs(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME)

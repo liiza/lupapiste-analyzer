@@ -3,6 +3,9 @@
 from csv_reader import CSVFile
 from log_entry_analyzer import *
 
+CONF_FILE = 'resources/conf'
+RESULT_FILE = 'resources/aws_file.csv'
+
 GET_ACTION_COUNT = False
 GET_FILLING_TIME = False
 FILTER_BY_OPERATION = False
@@ -12,7 +15,7 @@ FILTER_BY = ""
 def read_conf():
     params = ""
     filter_by = ""
-    with open('conf', 'r') as f:
+    with open(CONF_FILE, 'r') as f:
         contents = []
         for line in f:
             if line.startswith("#"):
@@ -58,7 +61,7 @@ def write_as_csv(applications):
             line += "," + str(application[FILLING_TIME])
         lines.append(line)
 
-    with open('aws_file.csv', 'w') as csv:
+    with open('%s' % RESULT_FILE, 'w') as csv:
         csv.write("\n".join(lines))
 
 
@@ -67,7 +70,7 @@ def main():
     set_params(params, filter_by)
 
     columns = [DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET]
-    csv_file = CSVFile(columns, open(data_file, 'r'), ",")
+    csv_file = CSVFile(columns, open(data_file, 'r'), ";")
 
     analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
     applications = analyzer.to_applications(csv_file.rows)

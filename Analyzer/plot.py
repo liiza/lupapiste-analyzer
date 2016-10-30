@@ -20,7 +20,7 @@ def get_municipalities(csvFile):
     return set(map((lambda x: x[MUNICIPALITY]), csvFile.rows))
 
 
-csvFile = CSVFile(COLUMNS, open("aws_file.csv", 'r'))
+csvFile = CSVFile(COLUMNS, open("resources/aws_file.csv", 'r'))
 avgs = get_avg_per_municipality(csvFile)
 municipalities = get_municipalities(csvFile)
 
