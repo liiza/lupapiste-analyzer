@@ -3,8 +3,9 @@ from datetime import datetime
 
 
 class CSVFile:
-    def __init__(self, columns, data):
+    def __init__(self, columns, data, delimiter=","):
         self.columns = columns
+        self.delimiter = delimiter
         self.rows = self.to_rows(data)
 
     def to_rows(self, data):
@@ -18,7 +19,7 @@ class CSVFile:
         return data_entries
 
     def to_cells(self, line):
-        chunks = line.split(";")
+        chunks = line.split(self.delimiter)
         cells = {}
         for column in self.columns:
             cells[column] = self.get_column_value(chunks, column)
@@ -28,6 +29,8 @@ class CSVFile:
         value = chunks[self.columns.index(column)]
         if column == DATE:
             value = self.to_date(value)
+        if column == TIME:
+            value = int(value)
         return value
 
     @staticmethod

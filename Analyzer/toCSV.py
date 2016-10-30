@@ -67,7 +67,7 @@ def main():
     set_params(params, filter_by)
 
     columns = [DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET]
-    csv_file = CSVFile(columns, open(data_file, 'r'))
+    csv_file = CSVFile(columns, open(data_file, 'r'), ",")
 
     analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
     applications = analyzer.to_applications(csv_file.rows)
