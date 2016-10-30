@@ -13,7 +13,7 @@ class LogEntryAnalyzer:
         if applications.has_key(application_id):
             return applications[application_id]
         else:
-            application = {MUNICIPALITY: log_entry[MUNICIPALITY]}
+            application = {APPLICATION_ID: log_entry[APPLICATION_ID], MUNICIPALITY: log_entry[MUNICIPALITY]}
             if self.get_action_count:
                 application[ACTION_COUNT] = 0
             if self.get_filling_time:

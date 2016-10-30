@@ -46,7 +46,7 @@ def set_params(params, filter_by):
 
 def write_as_csv(applications):
     lines = []
-    header = [MUNICIPALITY, TIME]
+    header = [APPLICATION_ID, MUNICIPALITY, TIME]
     if GET_ACTION_COUNT:
         header.append(ACTION_COUNT)
     if GET_FILLING_TIME:
@@ -54,11 +54,7 @@ def write_as_csv(applications):
     lines.append(",".join(header))
     for application_id in applications:
         application = applications[application_id]
-        line = ",".join(map(str, [application[MUNICIPALITY], application[TIME]]))
-        if GET_ACTION_COUNT:
-            line += "," + str(application[ACTION_COUNT])
-        if GET_FILLING_TIME:
-            line += "," + str(application[FILLING_TIME])
+        line = ",".join(map(lambda h: str(application[h]), header))
         lines.append(line)
 
     with open('%s' % RESULT_FILE, 'w') as csv:
