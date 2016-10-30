@@ -3,6 +3,7 @@ from cell_names import *
 import matplotlib.pyplot as plt
 from itertools import groupby
 
+
 def get_avg_per_municipality(csv_file):
     avgs = []
     grouped = times_grouped_by_municipality(csv_file)
@@ -21,12 +22,30 @@ def get_municipalities(csv_file):
     return set(map((lambda x: x[MUNICIPALITY]), csv_file.rows))
 
 
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME, FILLING_TIME], "resources/aws_file_backup.csv")
-avgs = get_avg_per_municipality(csv_file)
-municipalities = get_municipalities(csv_file)
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME, FILLING_TIME], "resources/aws_file.csv")
 
-xax = map(lambda x: x * 20, range(0, len(avgs)))
-plt.bar(xax, avgs, 10)
-plt.ylabel('Avg answering time')
-plt.xticks(xax, list(municipalities), rotation='vertical')
-plt.show()
+
+def plot_avgs():
+    avgs = get_avg_per_municipality(csv_file)
+    municipalities = get_municipalities(csv_file)
+    x_axel = map(lambda x: x * 20, range(0, len(avgs)))
+    plt.bar(x_axel, avgs, 10)
+    plt.ylabel('Avg answering time')
+    plt.xticks(x_axel, list(municipalities), rotation='vertical')
+    plt.show()
+
+
+def plot_box_plot():
+    grouped_by_municipality = times_grouped_by_municipality(csv_file)
+    x = []
+    for key, group in grouped_by_municipality:
+        x.append(map(lambda x: x[1], group))
+
+    municipalities = get_municipalities(csv_file)
+
+    plt.boxplot(x)
+    plt.ylabel('Time to first statement by authorities')
+    plt.xticks(range(1, len(municipalities) + 1), list(municipalities))
+    plt.show()
+
+plot_box_plot()

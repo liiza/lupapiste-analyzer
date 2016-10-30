@@ -67,14 +67,18 @@ def main():
     csv_file = CSVFile([DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], data_file, ";")
 
     analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
+    # Read applications
     applications = analyzer.to_applications(csv_file.rows)
+    # Rich data with filling time if wanted
     if GET_FILLING_TIME:
         applications = analyzer.to_applications_with_filling_time(applications)
+    # Add the answering time to data
     applications_with_time = analyzer.to_applications_with_time(applications)
-
+    # Filter data with biggest municipalities
     applications_with_time_filtered = analyzer.filter_applications_with_biggest_municipalities(applications_with_time, 5)
-
+    # Log counts
     log_statistics(applications, applications_with_time, applications_with_time_filtered, csv_file)
+    # Write results to csv -file
     write_as_csv(applications_with_time_filtered)
 
 
