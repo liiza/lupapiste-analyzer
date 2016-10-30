@@ -3,9 +3,6 @@ from cell_names import *
 import matplotlib.pyplot as plt
 from itertools import groupby
 
-COLUMNS = [MUNICIPALITY, TIME, FILLING_TIME]
-
-
 def get_avg_per_municipality(csv_file):
     avgs = []
     grouped = times_grouped_by_municipality(csv_file)
@@ -20,11 +17,11 @@ def times_grouped_by_municipality(csv_file):
     return groupby(sorted_by_municipality, lambda x: x[0])
 
 
-def get_municipalities(csvFile):
-    return set(map((lambda x: x[MUNICIPALITY]), csvFile.rows))
+def get_municipalities(csv_file):
+    return set(map((lambda x: x[MUNICIPALITY]), csv_file.rows))
 
 
-csv_file = CSVFile(COLUMNS, open("resources/aws_file.csv", 'r'))
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME, FILLING_TIME], "resources/aws_file_backup.csv")
 avgs = get_avg_per_municipality(csv_file)
 municipalities = get_municipalities(csv_file)
 

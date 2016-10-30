@@ -3,19 +3,20 @@ from datetime import datetime
 
 
 class CSVFile:
-    def __init__(self, columns, data, delimiter=","):
+    def __init__(self, columns, data_file, delimiter=","):
         self.columns = columns
         self.delimiter = delimiter
-        self.rows = self.to_rows(data)
+        self.rows = self.to_rows(data_file)
 
-    def to_rows(self, data):
-        header = True
-        data_entries = []
-        for line in data:
-            if header:
-                header = False
-                continue
-            data_entries.append(self.to_cells(line))
+    def to_rows(self, data_file):
+        with open(data_file, 'r') as data:
+            header = True
+            data_entries = []
+            for line in data:
+                if header:
+                    header = False
+                    continue
+                data_entries.append(self.to_cells(line))
         return data_entries
 
     def to_cells(self, line):

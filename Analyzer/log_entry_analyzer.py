@@ -1,5 +1,9 @@
+import operator
+from itertools import groupby
+
 from cell_names import *
 from data_helpers import *
+from toCSV import to_municipality_application_pair, get_municipality
 
 
 class LogEntryAnalyzer:
@@ -45,6 +49,21 @@ class LogEntryAnalyzer:
                     application[START_TIME] = log_entry[DATE]
 
         return applications
+
+    @staticmethod
+    def get_biggest_municipalities(applications_with_time, amount):
+        grouped_by_municipality = LogEntryAnalyzer.group_by_municipalities(applications_with_time)
+        municipality_count_map = {}
+        for key, group in grouped_by_municipality:
+            municipality_count_map[key] = len(map(lambda x: x[1], group))
+        return sorted(municipality_count_map.items(), key=operator.itemgetter(1), reverse=True)[:amount]
+
+    @staticmethod
+    def group_by_municipalities(applications_with_time):
+        municipality_row_map = map(to_municipality_application_pair(applications_with_time), applications_with_time)
+        sorted_by_municipality = sorted(municipality_row_map, key=lambda entry: entry[0])
+        grouped_by_municipality = groupby(sorted_by_municipality, lambda entry: entry[0])
+        return grouped_by_municipality
 
     @staticmethod
     def to_applications_with_filling_time(applications):
