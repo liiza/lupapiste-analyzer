@@ -42,10 +42,41 @@ def plot_box_plot():
         x.append(map(lambda x: x[1], group))
 
     municipalities = get_municipalities(csv_file)
-
     plt.boxplot(x)
     plt.ylabel('Time to first statement by authorities')
     plt.xticks(range(1, len(municipalities) + 1), list(municipalities))
     plt.show()
 
-plot_box_plot()
+
+colors = [
+    'b',
+    'g',
+    'r',
+    'c',
+    'm',
+    'y',
+    'k',
+    'w'
+]
+
+
+def time_by_filling_time():
+    municipalities = list(get_municipalities(csv_file))
+    mun_color_map = {}
+    for m in municipalities:
+        mun_color_map[m] = colors[municipalities.index(m)]
+
+    for m in get_municipalities(csv_file):
+        rows = csv_file.get_filtered_rows(MUNICIPALITY, m)
+        times = map(lambda row: row[TIME], rows)
+        filling_times = map(lambda row: row[FILLING_TIME], rows)
+        symbol = str(mun_color_map[m]) + "o"
+        plt.plot(filling_times, times, symbol)
+
+    plt.ylabel("Times from submit to first statement")
+    plt.xlabel("Filling times")
+    plt.show()
+
+
+# plot_box_plot()
+time_by_filling_time()

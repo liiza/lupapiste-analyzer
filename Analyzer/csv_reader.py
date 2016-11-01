@@ -37,3 +37,11 @@ class CSVFile:
     @staticmethod
     def to_date(s):
         return datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
+
+    def get_filtered_rows(self, column, value):
+        to_return = []
+        for row in self.rows:
+            if row[column] == value:
+                to_return.append(row)
+        return to_return
+
