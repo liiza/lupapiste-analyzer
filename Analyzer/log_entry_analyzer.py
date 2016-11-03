@@ -6,7 +6,8 @@ from data_helpers import *
 
 
 class LogEntryAnalyzer:
-    def __init__(self, get_action_count, get_filling_time, filter_by_operation, filter_by):
+    def __init__(self, get_time_to_first_statement=False, get_action_count=False, get_filling_time=False, filter_by_operation=False, filter_by=None):
+        self.get_time_to_first_statement = get_time_to_first_statement
         self.get_action_count = get_action_count
         self.get_filling_time = get_filling_time
         self.filter_by_operation = filter_by_operation
@@ -32,16 +33,16 @@ class LogEntryAnalyzer:
 
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
-            if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
-                if not application.has_key(SUBMIT_APPLICATION) or application[SUBMIT_APPLICATION] > log_entry[DATE]:
-                    application[SUBMIT_APPLICATION] = log_entry[DATE]
+            if self.get_time_to_first_statement:
+                if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
+                    if not application.has_key(SUBMIT_APPLICATION) or application[SUBMIT_APPLICATION] > log_entry[DATE]:
+                        application[SUBMIT_APPLICATION] = log_entry[DATE]
+                elif log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
+                    if not application.has_key(GIVE_STATEMENT) or application[GIVE_STATEMENT] > log_entry[DATE]:
+                        application[GIVE_STATEMENT] = log_entry[DATE]
 
-            elif log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
-                if not application.has_key(GIVE_STATEMENT) or application[GIVE_STATEMENT] > log_entry[DATE]:
-                    application[GIVE_STATEMENT] = log_entry[DATE]
-
-            elif self.get_action_count:
-                application[ACTION_COUNT] += 1
+            if self.get_action_count:
+                    application[ACTION_COUNT] += 1
 
             if self.get_filling_time:
                 if not application.has_key(START_TIME) or application[START_TIME] > log_entry[DATE]:
@@ -70,11 +71,11 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def to_applications_with_filling_time(applications):
-        return getTimeDiffAs(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME)
+        return get_time_diff_as(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME)
 
     @staticmethod
     def to_applications_with_time(applications):
-        return getTimeDiffAs(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME)
+        return get_time_diff_as(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME)
 
     @staticmethod
     def filter_applications_with_biggest_municipalities(applications, amount):

@@ -6,6 +6,7 @@ from log_entry_analyzer import *
 CONF_FILE = 'resources/conf'
 RESULT_FILE = 'resources/aws_file.csv'
 
+GET_TIME_TO_FIRST_STATEMENT = False
 GET_ACTION_COUNT = False
 GET_FILLING_TIME = False
 FILTER_BY_OPERATION = False
@@ -31,17 +32,40 @@ def read_conf():
 
 
 def set_params(params, filter_by):
-    global GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY
-    GET_ACTION_COUNT = params.find(ACTION_COUNT) >= 0
-    if GET_ACTION_COUNT:
-        print ACTION_COUNT
-    GET_FILLING_TIME = params.find(FILLING_TIME) >= 0
-    if GET_FILLING_TIME:
-        print FILLING_TIME
+    global GET_TIME_TO_FIRST_STATEMENT, GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY
+    should_get_time_to_first_statement()
+    should_get_action_count(params)
+    should_get_application_filling_time(params)
+    should_filter_by(filter_by)
+
+
+def should_filter_by(filter_by):
+    global FILTER_BY_OPERATION, FILTER_BY
     FILTER_BY_OPERATION = len(filter_by) > 0
     if FILTER_BY_OPERATION:
         FILTER_BY = filter_by
         print "filter by " + FILTER_BY
+
+
+def should_get_application_filling_time(params):
+    global GET_FILLING_TIME
+    GET_FILLING_TIME = params.find(FILLING_TIME) >= 0
+    if GET_FILLING_TIME:
+        print FILLING_TIME
+
+
+def should_get_action_count(params):
+    global GET_ACTION_COUNT
+    GET_ACTION_COUNT = params.find(ACTION_COUNT) >= 0
+    if GET_ACTION_COUNT:
+        print ACTION_COUNT
+
+
+def should_get_time_to_first_statement():
+    global GET_TIME_TO_FIRST_STATEMENT
+    GET_TIME_TO_FIRST_STATEMENT = len(TIME) > 0
+    if GET_TIME_TO_FIRST_STATEMENT:
+        print TIME
 
 
 def write_as_csv(applications):
@@ -64,29 +88,51 @@ def write_as_csv(applications):
 def main():
     data_file, params, filter_by = read_conf()
     set_params(params, filter_by)
-    csv_file = CSVFile([DATE, APPLICATION_ID, IS_INFO_REQUEST, OPERATION, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], data_file, ";")
+    csv_file = CSVFile([DATE, APPLICATION_ID, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], data_file, ";")
+    applications = to_applications(csv_file)
 
-    analyzer = LogEntryAnalyzer(GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
+    csv_file_2 = CSVFile([APPLICATION_ID, MUNICIPALITY, "permitType",
+                          "state", OPERATION, "operationId2", "operationId2",
+                          "createdDate", "submittedDate", "sentDate",
+                          "verdictGiven", "canceledDate", "isCancelled", "lon", "lat"],
+                         "/Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv", ";")
+    join(applications, csv_file_2)
+
+    # Write results to csv -file
+    write_as_csv(applications)
+
+    # Log statistics
+    log_statistics(csv_file, applications)
+
+
+def join(applications, csv_file):
+    applications_2 = LogEntryAnalyzer().to_applications(csv_file.rows)
+    return inner_join(applications, applications_2)
+
+
+def to_applications(csv_file):
+    analyzer = LogEntryAnalyzer(GET_TIME_TO_FIRST_STATEMENT, GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
     # Read applications
     applications = analyzer.to_applications(csv_file.rows)
+    print "applications"
     # Rich data with filling time if wanted
     if GET_FILLING_TIME:
         applications = analyzer.to_applications_with_filling_time(applications)
+    print "filling time"
     # Add the answering time to data
-    applications_with_time = analyzer.to_applications_with_time(applications)
+    if GET_TIME_TO_FIRST_STATEMENT:
+        applications = analyzer.to_applications_with_time(applications)
     # Filter data with biggest municipalities
-    applications_with_time_filtered = analyzer.filter_applications_with_biggest_municipalities(applications_with_time, 5)
-    # Log counts
-    log_statistics(applications, applications_with_time, applications_with_time_filtered, csv_file)
-    # Write results to csv -file
-    write_as_csv(applications_with_time_filtered)
+    print "time"
+    if FILTER_BY_OPERATION:
+        applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
+    print "filter"
+    return applications
 
 
-def log_statistics(applications, applications_with_time, applications_with_time_filtered, csv_file):
+def log_statistics(csv_file, applications):
     print str(len(csv_file.rows)) + " rows in csv file"
     print str(len(applications)) + " applications"
-    print str(len(applications_with_time)) + " applications with statement"
-    print str(len(applications_with_time_filtered)) + " applications filtered biggest municipalities"
 
 
 if __name__ == "__main__":

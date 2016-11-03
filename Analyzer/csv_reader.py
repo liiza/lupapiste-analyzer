@@ -1,5 +1,6 @@
-from cell_names import *
 from datetime import datetime
+
+from cell_names import *
 
 
 class CSVFile:

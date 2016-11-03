@@ -22,7 +22,7 @@ def get_municipalities(csv_file):
     return set(map((lambda x: x[MUNICIPALITY]), csv_file.rows))
 
 
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME, FILLING_TIME], "resources/aws_file.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME, FILLING_TIME], "resources/aws_file_20160407.csv")
 
 
 def plot_avgs():
@@ -78,5 +78,5 @@ def time_by_filling_time():
     plt.show()
 
 
-# plot_box_plot()
-time_by_filling_time()
+plot_box_plot()
+# time_by_filling_time()

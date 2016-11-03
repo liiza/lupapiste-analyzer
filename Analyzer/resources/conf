@@ -4,9 +4,11 @@
 #lupapiste-usage-week-20151201.csv
 #lupapiste-usage-20160914.csv
 #lupapiste-usage-month-201512.csv
-/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160407.csv
-#/Users/liisasa/Documents/LupapisteData/short.csv
+#/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160407.csv
+#/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160914.csv
+#/Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
+/Users/liisasa/Documents/LupapisteData/short.csv
 # Params
-filling-time
+time filling-time
 #action-count
-pientalo
+#pientalo
