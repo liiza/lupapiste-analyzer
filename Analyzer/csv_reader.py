@@ -31,7 +31,7 @@ class CSVFile:
         value = chunks[self.columns.index(column)]
         if is_date(column):
             value = self.to_date(value)
-        if column == TIME:
+        if column == TIME or column == TIME_TO_VERDICT:
             value = int(value)
         return value
 
@@ -46,10 +46,9 @@ class CSVFile:
 
         return date
 
-    def get_filtered_rows(self, column, value):
+    def get_filtered_rows(self, column, f):
         to_return = []
         for row in self.rows:
-            if row[column] == value:
+            if f(row[column]):
                 to_return.append(row)
         return to_return
-

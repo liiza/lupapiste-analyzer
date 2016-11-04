@@ -36,7 +36,7 @@ def plot_avgs():
 
 
 def plot_box_plot():
-    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, 0)
+    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
     grouped = grouped_by_municipality(rows, TIME_TO_VERDICT)
     x = []
     for key, group in grouped:
@@ -44,7 +44,8 @@ def plot_box_plot():
 
     municipalities = get_municipalities(rows)
     plt.boxplot(x)
-    plt.ylabel('Time to first statement by authorities')
+    plt.ylabel('Time to verdict')
+    plt.xlabel('Municipalities')
     plt.xticks(range(1, len(municipalities) + 1), list(municipalities))
     plt.show()
 
@@ -68,7 +69,7 @@ def time_by_filling_time():
         mun_color_map[m] = colors[municipalities.index(m)]
 
     for m in municipalities:
-        rows = csv_file.get_filtered_rows(MUNICIPALITY, m)
+        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
         times = map(lambda row: row[TIME], rows)
         filling_times = map(lambda row: row[TIME_TO_VERDICT], rows)
         symbol = str(mun_color_map[m]) + "o"
