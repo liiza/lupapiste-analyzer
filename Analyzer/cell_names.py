@@ -15,3 +15,4 @@ START_TIME = 'start-time'
 ACTION_COUNT = 'action-count'
 TIME = 'time'
 FILLING_TIME = 'filling-time'
+PERMIT_TYPE = "permitType"

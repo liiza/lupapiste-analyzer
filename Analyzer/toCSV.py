@@ -3,6 +3,8 @@
 from csv_reader import CSVFile
 from log_entry_analyzer import *
 
+STATE = "state"
+
 CONF_FILE = 'resources/conf'
 RESULT_FILE = 'resources/aws_file.csv'
 
@@ -68,19 +70,21 @@ def should_get_time_to_first_statement():
         print TIME
 
 
-def write_as_csv(applications):
-    lines = []
+def get_result_file_header():
     header = [APPLICATION_ID, MUNICIPALITY, TIME]
     if GET_ACTION_COUNT:
         header.append(ACTION_COUNT)
     if GET_FILLING_TIME:
         header.append(FILLING_TIME)
-    lines.append(",".join(header))
+    return header
+
+
+def write_as_csv(applications, header):
+    lines = [",".join(header)]
     for application_id in applications:
         application = applications[application_id]
         line = ",".join(map(lambda h: str(application[h]), header))
         lines.append(line)
-
     with open('%s' % RESULT_FILE, 'w') as csv:
         csv.write("\n".join(lines))
 
@@ -91,23 +95,21 @@ def main():
     csv_file = CSVFile([DATE, APPLICATION_ID, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], data_file, ";")
     applications = to_applications(csv_file)
 
-    csv_file_2 = CSVFile([APPLICATION_ID, MUNICIPALITY, "permitType",
-                          "state", OPERATION, "operationId2", "operationId2",
-                          "createdDate", "submittedDate", "sentDate",
-                          "verdictGiven", "canceledDate", "isCancelled", "lon", "lat"],
-                         "/Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv", ";")
-    join(applications, csv_file_2)
+    columns2 = [APPLICATION_ID, MUNICIPALITY, PERMIT_TYPE, STATE, OPERATION, "operationId2", "operationId2", "createdDate", "submittedDate", "sentDate",
+            "verdictGiven", "canceledDate", "isCancelled", "lon", "lat"]
+    csv_file_2 = CSVFile(columns2, "/Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv", ";")
+    joined = join(applications, csv_file_2)
 
     # Write results to csv -file
-    write_as_csv(applications)
+    write_as_csv(applications, get_result_file_header())
+    write_as_csv(joined, get_result_file_header() + columns2)
 
     # Log statistics
     log_statistics(csv_file, applications)
 
 
 def join(applications, csv_file):
-    applications_2 = LogEntryAnalyzer().to_applications(csv_file.rows)
-    return inner_join(applications, applications_2)
+    return inner_join(applications, csv_file)
 
 
 def to_applications(csv_file):

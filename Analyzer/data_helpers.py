@@ -1,3 +1,5 @@
+from cell_names import *
+
 def get_time_diff_as(applications, start, end, param):
     applications_with_time = {}
     for application_id in applications:
@@ -11,11 +13,11 @@ def get_time_diff_as(applications, start, end, param):
     return applications_with_time
 
 
-def inner_join(applications, applications2):
+def inner_join(applications, csv_file):
     joined_applications = {}
-    for key in applications.keys():
-        if applications2.has_key(key):
-            joined_applications[key] = merge_dicts(applications[key], applications2[key])
+    for row in csv_file.rows:
+        if applications.has_key(row[APPLICATION_ID]):
+            joined_applications[row[APPLICATION_ID]] = merge_dicts(applications[row[APPLICATION_ID]], row)
     return joined_applications
 
 
