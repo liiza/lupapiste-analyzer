@@ -29,7 +29,7 @@ class CSVFile:
 
     def get_column_value(self, chunks, column):
         value = chunks[self.columns.index(column)]
-        if column == DATE:
+        if is_date(column):
             value = self.to_date(value)
         if column == TIME:
             value = int(value)
@@ -37,7 +37,14 @@ class CSVFile:
 
     @staticmethod
     def to_date(s):
-        return datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
+        if len(s.strip()) == 0:
+            return None
+        try:
+            date = datetime.strptime(s, '%Y-%m-%d %H:%M:%S.%f')
+        except ValueError:
+            date = datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+
+        return date
 
     def get_filtered_rows(self, column, value):
         to_return = []
