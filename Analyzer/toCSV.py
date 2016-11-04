@@ -22,25 +22,44 @@ def main():
 
     applications = join(applications, join_file)
 
-    tmp = {}
-    for application_id in applications:
-        application = applications[application_id]
-        if application[SUBMITTED_DATE] is None:
-            time_to_verdict = [(TIME_TO_VERDICT, "no_submit")]
-        elif application[VERDICT_GIVEN] is None:
-            time_to_verdict = [(TIME_TO_VERDICT, "no_verdict_give")]
-        else:
-            time = (application[VERDICT_GIVEN] - application[SUBMITTED_DATE]).seconds
-            time_to_verdict = [(TIME_TO_VERDICT, time)]
-        tmp[application_id] = dict(application.items() + time_to_verdict)
+    if FILTER_BY_OPERATION:
+        applications = filter_by_operation(applications)
 
-    applications = tmp
+    applications = add_times_to_verdict(applications)
 
     # Write results to csv -file
     write_as_csv(applications, get_result_file_header())
 
     # Log statistics
     log_statistics(csv_file, applications)
+
+
+def add_times_to_verdict(applications):
+    tmp = {}
+    for application_id in applications:
+        application = applications[application_id]
+        tmp[application_id] = dict(application.items() + get_time_to_verdict(application))
+    return tmp
+
+
+def filter_by_operation(applications):
+    tmp = {}
+    for id in applications:
+        application = applications[id]
+        if application[OPERATION] == FILTER_BY:
+            tmp[id] = application
+    return tmp
+
+
+def get_time_to_verdict(application):
+    if application[SUBMITTED_DATE] is None:
+        time_to_verdict = [(TIME_TO_VERDICT, 0)]
+    elif application[VERDICT_GIVEN] is None:
+        time_to_verdict = [(TIME_TO_VERDICT, 0)]
+    else:
+        time = (application[VERDICT_GIVEN] - application[SUBMITTED_DATE]).seconds
+        time_to_verdict = [(TIME_TO_VERDICT, time)]
+    return time_to_verdict
 
 
 def read_conf():

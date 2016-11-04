@@ -28,8 +28,6 @@ class LogEntryAnalyzer:
     def to_applications(self, log_entries):
         applications = {}
         for log_entry in log_entries:
-            if self.filter_by_operation and log_entry[OPERATION] != self.filter_by:
-                continue
 
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
