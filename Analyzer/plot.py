@@ -1,6 +1,7 @@
 from csv_reader import *
 from cell_names import *
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from itertools import groupby
 
 
@@ -51,14 +52,14 @@ def plot_box_plot():
 
 
 colors = [
-    'b',
-    'g',
-    'r',
-    'c',
-    'm',
-    'y',
-    'k',
-    'w'
+    "b",
+    "g",
+    "r",
+    "c",
+    "m",
+    "y",
+    "k",
+    "w"
 ]
 
 
@@ -70,15 +71,16 @@ def time_by_filling_time():
 
     for m in municipalities:
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
-        times = map(lambda row: row[TIME], rows)
-        filling_times = map(lambda row: row[TIME_TO_VERDICT], rows)
-        symbol = str(mun_color_map[m]) + "o"
-        plt.plot(times, filling_times, symbol)
+        filling_times = map(lambda row: row[FILLING_TIME], rows)
+        times_to_verdict = map(lambda row: row[TIME_TO_VERDICT], rows)
+        plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
 
-    plt.ylabel("Times from submit to first statement")
-    plt.xlabel("Times to verdict")
+    plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
+
+    plt.xlabel("Filling time (s)")
+    plt.ylabel("Time to verdict (s)")
     plt.show()
 
 
-plot_box_plot()
-# time_by_filling_time()
+#plot_box_plot()
+time_by_filling_time()
