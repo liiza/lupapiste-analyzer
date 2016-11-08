@@ -1,7 +1,6 @@
 import operator
 from itertools import groupby
 
-from cell_names import *
 from data_helpers import *
 
 
@@ -31,13 +30,13 @@ class LogEntryAnalyzer:
 
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
-            if self.get_time_to_first_statement:
-                if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
-                    if not application.has_key(SUBMIT_APPLICATION) or application[SUBMIT_APPLICATION] > log_entry[DATE]:
-                        application[SUBMIT_APPLICATION] = log_entry[DATE]
-                elif log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
-                    if not application.has_key(GIVE_STATEMENT) or application[GIVE_STATEMENT] > log_entry[DATE]:
-                        application[GIVE_STATEMENT] = log_entry[DATE]
+            if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
+                if not application.has_key(SUBMIT_APPLICATION) or application[SUBMIT_APPLICATION] > log_entry[DATE]:
+                    application[SUBMIT_APPLICATION] = log_entry[DATE]
+
+            if log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
+                if not application.has_key(GIVE_STATEMENT) or application[GIVE_STATEMENT] > log_entry[DATE]:
+                    application[GIVE_STATEMENT] = log_entry[DATE]
 
             if self.get_action_count:
                     application[ACTION_COUNT] += 1

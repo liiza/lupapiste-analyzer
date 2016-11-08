@@ -1,37 +1,40 @@
 #!/usr/bin/python
-
+from conf_reader import Conf
 from csv_reader import CSVFile
 from log_entry_analyzer import *
 
-CONF_FILE = 'resources/conf'
 RESULT_FILE = 'resources/aws_file.csv'
-
-GET_TIME_TO_FIRST_STATEMENT = False
-GET_ACTION_COUNT = False
-GET_FILLING_TIME = False
-FILTER_BY_OPERATION = False
-FILTER_BY_MUNICIPALITY = False
-FILTER_BY = ""
 
 
 def main():
-    data_file, params, filter_by, join_file = read_conf()
-    set_params(params, filter_by)
-    csv_file = CSVFile([DATE, APPLICATION_ID, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], data_file, ";")
-    applications = to_applications(csv_file)
+    conf = Conf()
+    params = conf.get_params()
+    csv_file = CSVFile([DATE, APPLICATION_ID, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], conf.data_file, ";")
+    applications = to_applications(csv_file, params)
 
-    applications = join(applications, join_file)
+    applications = join(applications, conf.join_file)
 
-    if FILTER_BY_OPERATION:
-        applications = filter_by_operation(applications)
+    if params.filter_by_operation:
+        applications = filter_by_operation(applications, params.filter_by)
 
     applications = add_times_to_verdict(applications)
 
     # Write results to csv -file
-    write_as_csv(applications, get_result_file_header())
+    write_as_csv(applications, get_result_file_header(params))
 
     # Log statistics
     log_statistics(csv_file, applications)
+
+
+def get_result_file_header(params):
+    header = [APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT]
+    if params.get_action_count:
+        header.append(ACTION_COUNT)
+    if params.application_filling_time:
+        header.append(FILLING_TIME)
+    if params.get_time_to_first_statement:
+        header.append(TIME)
+    return header
 
 
 def add_times_to_verdict(applications):
@@ -42,12 +45,12 @@ def add_times_to_verdict(applications):
     return tmp
 
 
-def filter_by_operation(applications):
+def filter_by_operation(applications, filter_by):
     tmp = {}
-    for id in applications:
-        application = applications[id]
-        if application[OPERATION] == FILTER_BY:
-            tmp[id] = application
+    for application_id in applications:
+        application = applications[application_id]
+        if application[OPERATION] == filter_by:
+            tmp[application_id] = application
     return tmp
 
 
@@ -62,94 +65,6 @@ def get_time_to_verdict(application):
     return time_to_verdict
 
 
-def read_conf():
-    data_file = ""
-    join_file = ""
-    params = ""
-    filter_by = ""
-    with open(CONF_FILE, 'r') as f:
-        contents = read_file_and_skip_comments(f)
-        if len(contents) < 0:
-            raise ValueError("no data file name given")
-        data_file, join_file = read_data_files(contents)
-        if len(contents) > 1:
-            params = contents[1]
-        if len(contents) > 2:
-            filter_by = contents[2].strip()
-    return data_file, params, filter_by, join_file
-
-
-def read_data_files(contents):
-    join_file = ""
-    data_files = contents[0].split()
-    data_file = data_files[0].strip()
-    if len(data_files) > 1:
-        join_file = data_files[1].strip()
-    return data_file, join_file
-
-
-def read_file_and_skip_comments(f):
-    contents = []
-    for line in f:
-        if line.startswith("#"):
-            continue
-        contents.append(line)
-    return contents
-
-
-def set_params(params, filter_by):
-    should_get_time_to_first_statement()
-    should_get_action_count(params)
-    should_get_application_filling_time(params)
-    should_filter_by_municipality(params)
-    should_filter_by(filter_by)
-
-
-def should_filter_by_municipality(params):
-    global FILTER_BY_MUNICIPALITY
-    FILTER_BY_MUNICIPALITY = params.find(MUNICIPALITY) >= 0
-    if FILTER_BY_MUNICIPALITY:
-        print MUNICIPALITY
-
-
-def should_filter_by(filter_by):
-    global FILTER_BY_OPERATION, FILTER_BY
-    FILTER_BY_OPERATION = len(filter_by) > 0
-    if FILTER_BY_OPERATION:
-        FILTER_BY = filter_by
-        print "filter by " + FILTER_BY
-
-
-def should_get_application_filling_time(params):
-    global GET_FILLING_TIME
-    GET_FILLING_TIME = params.find(FILLING_TIME) >= 0
-    if GET_FILLING_TIME:
-        print FILLING_TIME
-
-
-def should_get_action_count(params):
-    global GET_ACTION_COUNT
-    GET_ACTION_COUNT = params.find(ACTION_COUNT) >= 0
-    if GET_ACTION_COUNT:
-        print ACTION_COUNT
-
-
-def should_get_time_to_first_statement():
-    global GET_TIME_TO_FIRST_STATEMENT
-    GET_TIME_TO_FIRST_STATEMENT = len(TIME) > 0
-    if GET_TIME_TO_FIRST_STATEMENT:
-        print TIME
-
-
-def get_result_file_header():
-    header = [APPLICATION_ID, MUNICIPALITY, TIME, TIME_TO_VERDICT]
-    if GET_ACTION_COUNT:
-        header.append(ACTION_COUNT)
-    if GET_FILLING_TIME:
-        header.append(FILLING_TIME)
-    return header
-
-
 def write_as_csv(applications, header, name=RESULT_FILE):
     lines = [",".join(header)]
     for application_id in applications:
@@ -160,23 +75,23 @@ def write_as_csv(applications, header, name=RESULT_FILE):
         csv.write("\n".join(lines))
 
 
-def to_applications(csv_file):
-    analyzer = LogEntryAnalyzer(GET_TIME_TO_FIRST_STATEMENT, GET_ACTION_COUNT, GET_FILLING_TIME, FILTER_BY_OPERATION, FILTER_BY)
+def to_applications(csv_file, params):
+    analyzer = LogEntryAnalyzer(params.get_time_to_first_statement,
+                                params.get_action_count,
+                                params.application_filling_time,
+                                params.filter_by_operation,
+                                params.filter_by)
     # Read applications
     applications = analyzer.to_applications(csv_file.rows)
-    print "applications"
     # Rich data with filling time if wanted
-    if GET_FILLING_TIME:
+    if params.application_filling_time:
         applications = analyzer.to_applications_with_filling_time(applications)
-    print "filling time"
     # Add the answering time to data
-    if GET_TIME_TO_FIRST_STATEMENT:
+    if params.get_time_to_first_statement:
         applications = analyzer.to_applications_with_time(applications)
     # Filter data with biggest municipalities
-    print "time"
-    if FILTER_BY_MUNICIPALITY:
+    if params.filter_by_municipality:
         applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
-    print "filter"
     return applications
 
 

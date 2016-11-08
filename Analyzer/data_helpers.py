@@ -1,5 +1,6 @@
 from cell_names import *
 
+
 def get_time_diff_as(applications, start, end, param):
     applications_with_time = {}
     for application_id in applications:
