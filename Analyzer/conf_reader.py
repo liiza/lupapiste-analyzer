@@ -49,40 +49,36 @@ class Conf:
         )
 
     def should_get_action_count(self, params):
-        global GET_ACTION_COUNT
-        GET_ACTION_COUNT = params.find(ACTION_COUNT) >= 0
-        if GET_ACTION_COUNT:
+        get_action_count = params.find(ACTION_COUNT) >= 0
+        if get_action_count:
             print ACTION_COUNT
-        return GET_ACTION_COUNT
+        return get_action_count
 
     def should_get_time_to_first_statement(self, params):
-        global GET_TIME_TO_FIRST_STATEMENT
-        GET_TIME_TO_FIRST_STATEMENT = params.find(TIME) > 0
-        if GET_TIME_TO_FIRST_STATEMENT:
+        get_time_to_first_statement = params.find(TIME) > 0
+        if get_time_to_first_statement:
             print TIME
-        return GET_TIME_TO_FIRST_STATEMENT
+        return get_time_to_first_statement
 
     def should_get_application_filling_time(self, params):
-        global GET_FILLING_TIME
-        GET_FILLING_TIME = params.find(FILLING_TIME) >= 0
-        if GET_FILLING_TIME:
+        get_filling_time = params.find(FILLING_TIME) >= 0
+        if get_filling_time:
             print FILLING_TIME
-        return GET_FILLING_TIME
+        return get_filling_time
 
     def should_filter_by(self, filter_by):
-        global FILTER_BY_OPERATION, FILTER_BY
-        FILTER_BY_OPERATION = len(filter_by) > 0
-        if FILTER_BY_OPERATION:
-            FILTER_BY = filter_by
-            print "filter by " + FILTER_BY
-        return FILTER_BY
+        filter_by_operation = len(filter_by) > 0
+        filter_by = ""
+        if filter_by_operation:
+            filter_by = filter_by
+            print "filter by " + filter_by
+        return filter_by
 
     def should_filter_by_municipality(self, params):
-        global FILTER_BY_MUNICIPALITY
-        FILTER_BY_MUNICIPALITY = params.find(MUNICIPALITY) >= 0
-        if FILTER_BY_MUNICIPALITY:
+        filter_by_municipality = params.find(MUNICIPALITY) >= 0
+        if filter_by_municipality:
             print MUNICIPALITY
-        return FILTER_BY_MUNICIPALITY
+        return filter_by_municipality
 
 
 class Params:
