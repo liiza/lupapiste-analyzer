@@ -26,55 +26,6 @@ def main():
     log_statistics(csv_file, applications)
 
 
-def get_result_file_header(params):
-    header = [APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT]
-    if params.get_action_count:
-        header.append(ACTION_COUNT)
-    if params.application_filling_time:
-        header.append(FILLING_TIME)
-    if params.get_time_to_first_statement:
-        header.append(TIME)
-    return header
-
-
-def add_times_to_verdict(applications):
-    tmp = {}
-    for application_id in applications:
-        application = applications[application_id]
-        tmp[application_id] = dict(application.items() + get_time_to_verdict(application))
-    return tmp
-
-
-def filter_by_operation(applications, filter_by):
-    tmp = {}
-    for application_id in applications:
-        application = applications[application_id]
-        if application[OPERATION] == filter_by:
-            tmp[application_id] = application
-    return tmp
-
-
-def get_time_to_verdict(application):
-    if application[SUBMITTED_DATE] is None:
-        time_to_verdict = [(TIME_TO_VERDICT, 0)]
-    elif application[VERDICT_GIVEN] is None:
-        time_to_verdict = [(TIME_TO_VERDICT, 0)]
-    else:
-        time = (application[VERDICT_GIVEN] - application[SUBMITTED_DATE]).seconds
-        time_to_verdict = [(TIME_TO_VERDICT, time)]
-    return time_to_verdict
-
-
-def write_as_csv(applications, header, name=RESULT_FILE):
-    lines = [",".join(header)]
-    for application_id in applications:
-        application = applications[application_id]
-        line = ",".join(map(lambda h: str(application[h]), header))
-        lines.append(line)
-    with open('%s' % name, 'w') as csv:
-        csv.write("\n".join(lines))
-
-
 def to_applications(csv_file, params):
     analyzer = LogEntryAnalyzer(params.get_time_to_first_statement,
                                 params.get_action_count,
@@ -104,6 +55,57 @@ def join(applications, join_file):
         write_as_csv(applications, [APPLICATION_ID, FILLING_TIME, MUNICIPALITY, VERDICT_GIVEN, SUBMIT_APPLICATION, SUBMITTED_DATE], "resources/joined.csv")
 
     return applications
+
+
+def filter_by_operation(applications, filter_by):
+    tmp = {}
+    for application_id in applications:
+        application = applications[application_id]
+        if application[OPERATION] == filter_by:
+            tmp[application_id] = application
+    return tmp
+
+
+def add_times_to_verdict(applications):
+    tmp = {}
+    for application_id in applications:
+        application = applications[application_id]
+        tmp[application_id] = dict(application.items() + get_time_to_verdict(application))
+    return tmp
+
+
+def get_time_to_verdict(application):
+    if application[SUBMITTED_DATE] is None:
+        time_to_verdict = [(TIME_TO_VERDICT, 0)]
+    elif application[VERDICT_GIVEN] is None:
+        time_to_verdict = [(TIME_TO_VERDICT, 0)]
+    else:
+        time = (application[VERDICT_GIVEN] - application[SUBMITTED_DATE]).seconds
+        time_to_verdict = [(TIME_TO_VERDICT, time)]
+    return time_to_verdict
+
+
+def get_result_file_header(params):
+    header = [APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT]
+    if params.get_action_count:
+        header.append(ACTION_COUNT)
+    if params.application_filling_time:
+        header.append(FILLING_TIME)
+    if params.get_time_to_first_statement:
+        header.append(TIME_TO_STATEMENT)
+    if params.filter_by_operation:
+        header.append(OPERATION)
+    return header
+
+
+def write_as_csv(applications, header, name=RESULT_FILE):
+    lines = [",".join(header)]
+    for application_id in applications:
+        application = applications[application_id]
+        line = ",".join(map(lambda h: str(application[h]), header))
+        lines.append(line)
+    with open('%s' % name, 'w') as csv:
+        csv.write("\n".join(lines))
 
 
 def log_statistics(csv_file, applications):

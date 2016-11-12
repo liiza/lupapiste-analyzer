@@ -72,7 +72,7 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def to_applications_with_time(applications):
-        return get_time_diff_as(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME)
+        return get_time_diff_as(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME_TO_STATEMENT)
 
     @staticmethod
     def filter_applications_with_biggest_municipalities(applications, amount):

@@ -31,7 +31,7 @@ class CSVFile:
         value = chunks[self.columns.index(column)]
         if is_date(column):
             value = self.to_date(value)
-        if column == TIME or column == TIME_TO_VERDICT:
+        if column == TIME_TO_STATEMENT or column == TIME_TO_VERDICT:
             value = int(value)
         return value
 

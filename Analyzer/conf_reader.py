@@ -48,29 +48,33 @@ class Conf:
             self.should_filter_by_municipality(self.params)
         )
 
-    def should_get_action_count(self, params):
+    @staticmethod
+    def should_get_action_count(params):
         get_action_count = params.find(ACTION_COUNT) >= 0
         if get_action_count:
             print ACTION_COUNT
         return get_action_count
 
-    def should_get_time_to_first_statement(self, params):
-        get_time_to_first_statement = params.find(TIME) > 0
+    @staticmethod
+    def should_get_time_to_first_statement(params):
+        get_time_to_first_statement = params.find(TIME_TO_STATEMENT) > 0
         if get_time_to_first_statement:
-            print TIME
+            print TIME_TO_STATEMENT
         return get_time_to_first_statement
 
-    def should_get_application_filling_time(self, params):
+    @staticmethod
+    def should_get_application_filling_time(params):
         get_filling_time = params.find(FILLING_TIME) >= 0
         if get_filling_time:
             print FILLING_TIME
         return get_filling_time
 
-    def should_filter_by(self, filter_by):
-        filter_by_operation = len(filter_by) > 0
+    @staticmethod
+    def should_filter_by(fltr_by):
+        filter_by_operation = len(fltr_by) > 0
         filter_by = ""
         if filter_by_operation:
-            filter_by = filter_by
+            filter_by = fltr_by
             print "filter by " + filter_by
         return filter_by
 

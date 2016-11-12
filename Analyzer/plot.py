@@ -7,7 +7,7 @@ from itertools import groupby
 
 def get_avg_per_municipality(csv_file):
     avgs = []
-    grouped = grouped_by_municipality(csv_file.rows, TIME)
+    grouped = grouped_by_municipality(csv_file.rows, TIME_TO_STATEMENT)
     for key, group in grouped:
         times = map(lambda x: x[1], group)
         avgs.append(reduce(lambda x, y: x + y, times) / len(times))
@@ -23,7 +23,7 @@ def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_verdict_times.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, TIME_TO_STATEMENT, FILLING_TIME], "resources/aws_file.csv")
 
 
 def plot_avgs():
@@ -71,8 +71,8 @@ def time_by_filling_time():
 
     for m in municipalities:
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
-        filling_times = map(lambda row: row[FILLING_TIME], rows)
-        times_to_verdict = map(lambda row: row[TIME_TO_VERDICT], rows)
+        filling_times = map(lambda row: (row[FILLING_TIME]), rows)
+        times_to_verdict = map(lambda row: (row[TIME_TO_STATEMENT]), rows)
         plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
@@ -82,5 +82,5 @@ def time_by_filling_time():
     plt.show()
 
 
-#plot_box_plot()
+# plot_box_plot()
 time_by_filling_time()

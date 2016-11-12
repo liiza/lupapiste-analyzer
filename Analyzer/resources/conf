@@ -9,6 +9,7 @@
 # Use this shorter file for testing
 #/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
-time filling-time municipality
+time filling-time municipality time-to-statement
 #action-count
-pientalo
+#puun-kaataminen
+maalampo

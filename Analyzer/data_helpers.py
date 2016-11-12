@@ -1,4 +1,5 @@
 from cell_names import *
+from math import log
 
 
 def get_time_diff_as(applications, start, end, param):
@@ -27,3 +28,9 @@ def merge_dicts(*dict_args):
     for dictionary in dict_args:
         result.update(dictionary)
     return result
+
+
+def to_log(num):
+    if num == 0:
+        return 0
+    return log(int(num))
