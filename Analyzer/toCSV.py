@@ -27,17 +27,19 @@ def to_applications(csv_file, conf, params):
                                 params.filter_by)
     # Read applications
     applications = analyzer.to_applications(csv_file.rows)
+    applications = join(applications, conf.join_file)
+
     # Rich data with filling time if wanted
     if params.application_filling_time:
         applications = analyzer.to_applications_with_filling_time(applications, params.logarithmic_numbers)
-    # Add the answering time to data
+
+    # Add time to first statement
     if params.get_time_to_first_statement:
         applications = analyzer.to_applications_with_time(applications, params.logarithmic_numbers)
+
     # Filter data with biggest municipalities
     if params.filter_by_municipality:
         applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
-
-    applications = join(applications, conf.join_file)
 
     if params.filter_by_operation:
         applications = filter_by_operation(applications, params.filter_by)
@@ -53,7 +55,7 @@ def join(applications, join_file):
                     VERDICT_GIVEN, "canceledDate", "isCancelled", "lon", "lat"]
         csv_file_2 = CSVFile(columns2, join_file, ";")
         applications = inner_join(applications, csv_file_2)
-        write_as_csv(applications, [APPLICATION_ID, FILLING_TIME, MUNICIPALITY, VERDICT_GIVEN, SUBMIT_APPLICATION, SUBMITTED_DATE], "resources/joined.csv")
+        write_as_csv(applications, [APPLICATION_ID, MUNICIPALITY, VERDICT_GIVEN, SUBMITTED_DATE], "resources/joined.csv")
 
     return applications
 

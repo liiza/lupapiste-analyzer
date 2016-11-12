@@ -3,6 +3,7 @@ from cell_names import *
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from itertools import groupby
+from data_helpers import to_log
 
 
 def get_avg_per_municipality(csv_file):
@@ -23,7 +24,8 @@ def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, TIME_TO_STATEMENT, FILLING_TIME], "resources/aws_file.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
+# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, TIME_TO_STATEMENT, FILLING_TIME], "resources/aws_file.csv")
 
 
 def plot_avgs():
@@ -72,7 +74,7 @@ def time_by_filling_time():
     for m in municipalities:
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
         filling_times = map(lambda row: (row[FILLING_TIME]), rows)
-        times_to_verdict = map(lambda row: (row[TIME_TO_STATEMENT]), rows)
+        times_to_verdict = map(lambda row: (row[TIME_TO_VERDICT]), rows)
         plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
@@ -82,5 +84,5 @@ def time_by_filling_time():
     plt.show()
 
 
-#plot_box_plot()
+# plot_box_plot()
 time_by_filling_time()

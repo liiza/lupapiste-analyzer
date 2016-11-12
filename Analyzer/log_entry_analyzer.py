@@ -66,7 +66,7 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def to_applications_with_filling_time(applications, log):
-        return get_time_diff_as(applications, CREATED_DATE, SUBMITTED_DATE, FILLING_TIME, log)
+        return get_time_diff_as(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME, log)
 
     @staticmethod
     def to_applications_with_time(applications, log):
@@ -74,7 +74,7 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def to_applications_with_time_to_verdict(applications, log):
-        return get_time_diff_as(applications, SUBMITTED_DATE, VERDICT_GIVEN, TIME_TO_VERDICT, log)
+        return get_time_diff_as(applications, SUBMIT_APPLICATION, VERDICT_GIVEN, TIME_TO_VERDICT, log)
 
     @staticmethod
     def filter_applications_with_biggest_municipalities(applications, amount):
