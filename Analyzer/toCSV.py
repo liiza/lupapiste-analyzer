@@ -49,7 +49,7 @@ def to_applications(csv_file, conf, params):
 
 def join(applications, join_file):
     if join_file != "":
-        columns2 = [APPLICATION_ID, MUNICIPALITY, PERMIT_TYPE, STATE, OPERATION, "operationId2", "operationId2", "createdDate", SUBMITTED_DATE, "sentDate",
+        columns2 = [APPLICATION_ID, MUNICIPALITY, PERMIT_TYPE, STATE, OPERATION, "operationId2", "operationId2", CREATED_DATE, SUBMITTED_DATE, "sentDate",
                     VERDICT_GIVEN, "canceledDate", "isCancelled", "lon", "lat"]
         csv_file_2 = CSVFile(columns2, join_file, ";")
         applications = inner_join(applications, csv_file_2)

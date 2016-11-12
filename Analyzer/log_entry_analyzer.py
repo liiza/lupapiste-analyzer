@@ -12,26 +12,13 @@ class LogEntryAnalyzer:
         self.filter_by_operation = filter_by_operation
         self.filter_by = filter_by
 
-    def get_or_create_application(self, application_id, applications, log_entry):
-        if application_id in applications:
-            return applications[application_id]
-        else:
-            application = {APPLICATION_ID: log_entry[APPLICATION_ID], MUNICIPALITY: log_entry[MUNICIPALITY]}
-            if self.get_action_count:
-                application[ACTION_COUNT] = 0
-            if self.get_filling_time:
-                application[START_TIME] = log_entry[DATE]
-            applications[application_id] = application
-            return application
-
     def to_applications(self, log_entries):
         applications = {}
         for log_entry in log_entries:
-
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
-                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] > log_entry[DATE]:
+                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] < log_entry[DATE]:
                     application[SUBMIT_APPLICATION] = log_entry[DATE]
 
             if log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
@@ -39,6 +26,8 @@ class LogEntryAnalyzer:
                     application[GIVE_STATEMENT] = log_entry[DATE]
 
             if self.get_action_count:
+                if ACTION_COUNT not in application:
+                    application[ACTION_COUNT] = 0
                 application[ACTION_COUNT] += 1
 
             if self.get_filling_time:
@@ -46,6 +35,15 @@ class LogEntryAnalyzer:
                     application[START_TIME] = log_entry[DATE]
 
         return applications
+
+    @staticmethod
+    def get_or_create_application(application_id, applications, log_entry):
+        if application_id in applications:
+            return applications[application_id]
+        else:
+            application = {APPLICATION_ID: log_entry[APPLICATION_ID], MUNICIPALITY: log_entry[MUNICIPALITY]}
+            applications[application_id] = application
+            return application
 
     @staticmethod
     def get_biggest_municipalities(applications_with_time, amount):
@@ -68,7 +66,7 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def to_applications_with_filling_time(applications, log):
-        return get_time_diff_as(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME, log)
+        return get_time_diff_as(applications, CREATED_DATE, SUBMITTED_DATE, FILLING_TIME, log)
 
     @staticmethod
     def to_applications_with_time(applications, log):

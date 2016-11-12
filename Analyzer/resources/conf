@@ -4,11 +4,13 @@
 #lupapiste-usage-20160914.csv
 #lupapiste-usage-month-201512.csv
 #/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160407.csv
-/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160914.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
-# Use this shorter file for testing
-#/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
+# PROD
+#/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160914.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
+# TEST
+/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
-time filling-time municipality time-to-statement log
+time filling-time municipality time-to-statement
 #action-count
 #puun-kaataminen
-maalampo
+#maalampo
+pientalo
