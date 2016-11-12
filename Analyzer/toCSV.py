@@ -10,14 +10,7 @@ def main():
     conf = Conf()
     params = conf.get_params()
     csv_file = CSVFile([DATE, APPLICATION_ID, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], conf.data_file, ";")
-    applications = to_applications(csv_file, params)
-
-    applications = join(applications, conf.join_file)
-
-    if params.filter_by_operation:
-        applications = filter_by_operation(applications, params.filter_by)
-
-    applications = add_times_to_verdict(applications)
+    applications = to_applications(csv_file, conf, params)
 
     # Write results to csv -file
     write_as_csv(applications, get_result_file_header(params))
@@ -26,7 +19,7 @@ def main():
     log_statistics(csv_file, applications)
 
 
-def to_applications(csv_file, params):
+def to_applications(csv_file, conf, params):
     analyzer = LogEntryAnalyzer(params.get_time_to_first_statement,
                                 params.get_action_count,
                                 params.application_filling_time,
@@ -36,13 +29,21 @@ def to_applications(csv_file, params):
     applications = analyzer.to_applications(csv_file.rows)
     # Rich data with filling time if wanted
     if params.application_filling_time:
-        applications = analyzer.to_applications_with_filling_time(applications)
+        applications = analyzer.to_applications_with_filling_time(applications, params.logarithmic_numbers)
     # Add the answering time to data
     if params.get_time_to_first_statement:
-        applications = analyzer.to_applications_with_time(applications)
+        applications = analyzer.to_applications_with_time(applications, params.logarithmic_numbers)
     # Filter data with biggest municipalities
     if params.filter_by_municipality:
         applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
+
+    applications = join(applications, conf.join_file)
+
+    if params.filter_by_operation:
+        applications = filter_by_operation(applications, params.filter_by)
+
+    applications = analyzer.to_applications_with_time_to_verdict(applications, params.logarithmic_numbers)
+
     return applications
 
 
@@ -64,25 +65,6 @@ def filter_by_operation(applications, filter_by):
         if application[OPERATION] == filter_by:
             tmp[application_id] = application
     return tmp
-
-
-def add_times_to_verdict(applications):
-    tmp = {}
-    for application_id in applications:
-        application = applications[application_id]
-        tmp[application_id] = dict(application.items() + get_time_to_verdict(application))
-    return tmp
-
-
-def get_time_to_verdict(application):
-    if application[SUBMITTED_DATE] is None:
-        time_to_verdict = [(TIME_TO_VERDICT, 0)]
-    elif application[VERDICT_GIVEN] is None:
-        time_to_verdict = [(TIME_TO_VERDICT, 0)]
-    else:
-        time = (application[VERDICT_GIVEN] - application[SUBMITTED_DATE]).seconds
-        time_to_verdict = [(TIME_TO_VERDICT, time)]
-    return time_to_verdict
 
 
 def get_result_file_header(params):

@@ -2,15 +2,18 @@ from cell_names import *
 from math import log
 
 
-def get_time_diff_as(applications, start, end, param):
+def get_time_diff_as(applications, start, end, param, log):
     applications_with_time = {}
     for application_id in applications:
         application = applications[application_id]
-        if not end in application or not start in application:
+        if end not in application or start not in application:
+            continue
+        if not application[start] or not application[end]:
             continue
         if application[end] < application[start]:
             continue
-        time = (application[end] - application[start]).seconds
+        diff = (application[end] - application[start]).seconds
+        time = to_log(diff) if log else diff
         applications_with_time[application_id] = dict(application.items() + [(param, time)])
     return applications_with_time
 

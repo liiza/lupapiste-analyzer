@@ -31,18 +31,18 @@ class LogEntryAnalyzer:
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
-                if not SUBMIT_APPLICATION in application or application[SUBMIT_APPLICATION] > log_entry[DATE]:
+                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] > log_entry[DATE]:
                     application[SUBMIT_APPLICATION] = log_entry[DATE]
 
             if log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
-                if not GIVE_STATEMENT in application or application[GIVE_STATEMENT] > log_entry[DATE]:
+                if GIVE_STATEMENT not in application or application[GIVE_STATEMENT] > log_entry[DATE]:
                     application[GIVE_STATEMENT] = log_entry[DATE]
 
             if self.get_action_count:
-                    application[ACTION_COUNT] += 1
+                application[ACTION_COUNT] += 1
 
             if self.get_filling_time:
-                if not START_TIME in application or application[START_TIME] > log_entry[DATE]:
+                if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
                     application[START_TIME] = log_entry[DATE]
 
         return applications
@@ -67,12 +67,16 @@ class LogEntryAnalyzer:
         return lambda application_id: (applications[application_id][MUNICIPALITY], applications[application_id])
 
     @staticmethod
-    def to_applications_with_filling_time(applications):
-        return get_time_diff_as(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME)
+    def to_applications_with_filling_time(applications, log):
+        return get_time_diff_as(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME, log)
 
     @staticmethod
-    def to_applications_with_time(applications):
-        return get_time_diff_as(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME_TO_STATEMENT)
+    def to_applications_with_time(applications, log):
+        return get_time_diff_as(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME_TO_STATEMENT, log)
+
+    @staticmethod
+    def to_applications_with_time_to_verdict(applications, log):
+        return get_time_diff_as(applications, SUBMITTED_DATE, VERDICT_GIVEN, TIME_TO_VERDICT, log)
 
     @staticmethod
     def filter_applications_with_biggest_municipalities(applications, amount):
@@ -80,4 +84,3 @@ class LogEntryAnalyzer:
         print "Biggest municipalities and applications " + str(municipalities_and_applications_counts)
         municipalities = map(lambda t: t[0], municipalities_and_applications_counts)
         return {k: v for k, v in applications.iteritems() if str(v[MUNICIPALITY]) in municipalities}
-        # return filter(lambda id: str(applications[id][MUNICIPALITY]) in municipalities, applications)

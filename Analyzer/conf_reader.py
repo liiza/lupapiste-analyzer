@@ -2,6 +2,7 @@ from cell_names import *
 
 CONF_FILE = 'resources/conf'
 
+
 class Conf:
     def __init__(self):
         self.data_file, self.params, self.filter_by, self.join_file = self.read_conf()
@@ -40,12 +41,13 @@ class Conf:
 
     def get_params(self):
         return Params(
-            self.should_get_action_count(self.params),
-            self.should_get_time_to_first_statement(self.params),
-            self.should_get_application_filling_time(self.params),
-            len(self.should_filter_by(self.filter_by)) > 0,
-            self.should_filter_by(self.filter_by),
-            self.should_filter_by_municipality(self.params)
+            {ACTION_COUNT: self.should_get_action_count(self.params),
+             TIME_TO_STATEMENT: self.should_get_time_to_first_statement(self.params),
+             FILLING_TIME: self.should_get_application_filling_time(self.params),
+             "filter": len(self.should_filter_by(self.filter_by)) > 0,
+             "filter_by": self.should_filter_by(self.filter_by),
+             MUNICIPALITY: self.should_filter_by_municipality(self.params),
+             "log":self.should_use_logarithmic_numbers(self.params)}
         )
 
     @staticmethod
@@ -85,12 +87,19 @@ class Conf:
             print MUNICIPALITY
         return filter_by_municipality
 
+    @staticmethod
+    def should_use_logarithmic_numbers(params):
+        use_log = params.find("log") >= 0
+        if use_log:
+            print "using logaritmic numbers"
+        return use_log
 
 class Params:
-    def __init__(self, get_action_count, get_time_to_first_statement, application_filling_time, filter_by_operation, filter_by, filter_by_municipality):
-        self.get_action_count = get_action_count
-        self.get_time_to_first_statement = get_time_to_first_statement
-        self.application_filling_time = application_filling_time
-        self.filter_by_operation = filter_by_operation
-        self.filter_by = filter_by
-        self.filter_by_municipality = filter_by_municipality
+    def __init__(self, params):
+        self.get_action_count = params[ACTION_COUNT]
+        self.get_time_to_first_statement = params[TIME_TO_STATEMENT]
+        self.application_filling_time = params[FILLING_TIME]
+        self.filter_by_operation = params["filter"]
+        self.filter_by = params["filter_by"]
+        self.filter_by_municipality = params[MUNICIPALITY]
+        self.logarithmic_numbers = params["log"]

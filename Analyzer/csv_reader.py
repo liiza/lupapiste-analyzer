@@ -32,7 +32,7 @@ class CSVFile:
         if is_date(column):
             value = self.to_date(value)
         if column == TIME_TO_STATEMENT or column == TIME_TO_VERDICT:
-            value = int(value)
+            value = float(value)
         return value
 
     @staticmethod
