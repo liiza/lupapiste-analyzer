@@ -78,7 +78,8 @@ class Conf:
             print "filter by " + filter_by
         return filter_by
 
-    def should_filter_by_municipality(self, params):
+    @staticmethod
+    def should_filter_by_municipality(params):
         filter_by_municipality = params.find(MUNICIPALITY) >= 0
         if filter_by_municipality:
             print MUNICIPALITY

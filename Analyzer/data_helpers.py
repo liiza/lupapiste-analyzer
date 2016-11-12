@@ -6,7 +6,7 @@ def get_time_diff_as(applications, start, end, param):
     applications_with_time = {}
     for application_id in applications:
         application = applications[application_id]
-        if not application.has_key(end) or not application.has_key(start):
+        if not end in application or not start in application:
             continue
         if application[end] < application[start]:
             continue
@@ -18,7 +18,7 @@ def get_time_diff_as(applications, start, end, param):
 def inner_join(applications, csv_file):
     joined_applications = {}
     for row in csv_file.rows:
-        if applications.has_key(row[APPLICATION_ID]):
+        if row[APPLICATION_ID] in applications:
             joined_applications[row[APPLICATION_ID]] = merge_dicts(applications[row[APPLICATION_ID]], row)
     return joined_applications
 

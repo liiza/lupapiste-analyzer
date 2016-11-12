@@ -1,4 +1,3 @@
-# Data file
 #lupapiste-usage-hour-2015120110.csv
 #lupapiste-usage-day-20151201.csv
 #lupapiste-usage-week-20151201.csv
@@ -9,7 +8,7 @@
 # Use this shorter file for testing
 #/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
-time filling-time municipality time-to-statement
+time filling-time municipality time-to-statement log
 #action-count
 #puun-kaataminen
 maalampo
