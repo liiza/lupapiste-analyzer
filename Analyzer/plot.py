@@ -32,7 +32,8 @@ def get_municipalities(rows):
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
 # applicationId,municipality,timeToVerdict,filling-time,time-to-statement,operation
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, TIME_TO_STATEMENT, OPERATION], "resources/aws_file_maalampo.csv")
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION, MONTH], "resources/aws_file.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION, MONTH], "resources/aws_file_maalampo.csv")
+# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION], "resources/aws_file.csv")
 
 
 def plot_avgs():
