@@ -29,7 +29,7 @@ class LogEntryAnalyzer:
                 if GIVE_STATEMENT not in application or application[GIVE_STATEMENT] > log_entry[DATE]:
                     application[GIVE_STATEMENT] = log_entry[DATE]
 
-            if self.get_action_count:
+            if self.get_action_count and log_entry[ROLE] == APPLICANT:
                 if ACTION_COUNT not in application:
                     application[ACTION_COUNT] = 0
                 application[ACTION_COUNT] += 1
@@ -83,3 +83,11 @@ class LogEntryAnalyzer:
         print "Biggest municipalities and applications " + str(municipalities_and_applications_counts)
         municipalities = map(lambda t: t[0], municipalities_and_applications_counts)
         return {k: v for k, v in applications.iteritems() if str(v[MUNICIPALITY]) in municipalities}
+
+    def to_applications_with_start_month(self, applications):
+        applications_with_start_month = {}
+        for application_id in applications:
+            application = applications[application_id]
+            month = application[START_TIME].month
+            applications_with_start_month[application_id] = dict(application.items() + [(MONTH, month)])
+        return applications_with_start_month

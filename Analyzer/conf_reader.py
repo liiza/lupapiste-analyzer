@@ -47,7 +47,8 @@ class Conf:
              "filter": len(self.should_filter_by(self.filter_by)) > 0,
              "filter_by": self.should_filter_by(self.filter_by),
              MUNICIPALITY: self.should_filter_by_municipality(self.params),
-             "log":self.should_use_logarithmic_numbers(self.params)}
+             "log": self.should_use_logarithmic_numbers(self.params),
+             MONTH :self.should_add_start_month(self.params)}
         )
 
     @staticmethod
@@ -94,6 +95,14 @@ class Conf:
             print "using logaritmic numbers"
         return use_log
 
+    @staticmethod
+    def should_add_start_month(params):
+        use_month = params.find(MONTH) >= 0
+        if use_month:
+            print "add start month"
+        return use_month
+
+
 class Params:
     def __init__(self, params):
         self.get_action_count = params[ACTION_COUNT]
@@ -103,3 +112,4 @@ class Params:
         self.filter_by = params["filter_by"]
         self.filter_by_municipality = params[MUNICIPALITY]
         self.logarithmic_numbers = params["log"]
+        self.month = params[MONTH]

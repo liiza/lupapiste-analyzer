@@ -37,6 +37,8 @@ def to_applications(csv_file, conf, params):
     if params.get_time_to_first_statement:
         applications = analyzer.to_applications_with_time_to_first_statement(applications, params.logarithmic_numbers)
 
+    applications = analyzer.to_applications_with_start_month(applications)
+
     # Filter data with biggest municipalities
     if params.filter_by_municipality:
         applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
@@ -79,6 +81,8 @@ def get_result_file_header(params):
         header.append(TIME_TO_STATEMENT)
     if params.filter_by_operation:
         header.append(OPERATION)
+    if params.month:
+        header.append(MONTH)
     return header
 
 

@@ -20,12 +20,18 @@ def grouped_by_municipality(rows, param):
     return groupby(sorted_by_municipality, lambda x: x[0])
 
 
+def grouped_by_month(rows, param):
+    sorted_by_month = sorted(map(lambda x: (int(x[MONTH]), x[param]), rows), key=lambda entry: entry[0])
+    return groupby(sorted_by_month, lambda x: x[0])
+
+
 def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, TIME_TO_STATEMENT, FILLING_TIME], "resources/aws_file.csv")
+# applicationId,municipality,timeToVerdict,action-count,filling-time,operation,start_month
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, ACTION_COUNT, FILLING_TIME, OPERATION, MONTH], "resources/aws_file.csv")
 
 
 def plot_avgs():
@@ -38,7 +44,7 @@ def plot_avgs():
     plt.show()
 
 
-def plot_box_plot():
+def plot_box_plot_by_municipalities():
     rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
     grouped = grouped_by_municipality(rows, TIME_TO_VERDICT)
     x = []
@@ -50,6 +56,21 @@ def plot_box_plot():
     plt.ylabel('Time to verdict')
     plt.xlabel('Municipalities')
     plt.xticks(range(1, len(municipalities) + 1), list(municipalities))
+    plt.show()
+
+
+def plot_box_plot_by_month():
+    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
+    grouped = grouped_by_month(rows, TIME_TO_VERDICT)
+    x = []
+    for key, group in grouped:
+        x.append(map(lambda x: x[1], group))
+
+    months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    plt.boxplot(x)
+    plt.ylabel('Time to verdict')
+    plt.xlabel('Months')
+    plt.xticks(range(1, 1 + len(months)), list(months))
     plt.show()
 
 
@@ -84,5 +105,6 @@ def time_by_filling_time():
     plt.show()
 
 
-# plot_box_plot()
-time_by_filling_time()
+plot_box_plot_by_month()
+# plot_box_plot_by_municipalities()
+# time_by_filling_time()

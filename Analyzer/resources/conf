@@ -9,7 +9,8 @@
 # TEST
 #/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
-time filling-time municipality time-to-statement
+filling-time municipality action-count start_month
+#time-to-statement
 #action-count
 #puun-kaataminen
 maalampo
