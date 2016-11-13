@@ -35,7 +35,7 @@ def to_applications(csv_file, conf, params):
 
     # Add time to first statement
     if params.get_time_to_first_statement:
-        applications = analyzer.to_applications_with_time(applications, params.logarithmic_numbers)
+        applications = analyzer.to_applications_with_time_to_first_statement(applications, params.logarithmic_numbers)
 
     # Filter data with biggest municipalities
     if params.filter_by_municipality:

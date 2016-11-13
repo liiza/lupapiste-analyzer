@@ -24,8 +24,8 @@ def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
-# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, TIME_TO_STATEMENT, FILLING_TIME], "resources/aws_file.csv")
+# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, TIME_TO_STATEMENT, FILLING_TIME], "resources/aws_file.csv")
 
 
 def plot_avgs():

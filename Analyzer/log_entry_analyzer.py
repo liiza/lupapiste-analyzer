@@ -17,6 +17,10 @@ class LogEntryAnalyzer:
         for log_entry in log_entries:
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
+            if self.get_filling_time:
+                if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
+                    application[START_TIME] = log_entry[DATE]
+
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
                 if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] < log_entry[DATE]:
                     application[SUBMIT_APPLICATION] = log_entry[DATE]
@@ -30,9 +34,6 @@ class LogEntryAnalyzer:
                     application[ACTION_COUNT] = 0
                 application[ACTION_COUNT] += 1
 
-            if self.get_filling_time:
-                if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
-                    application[START_TIME] = log_entry[DATE]
 
         return applications
 
@@ -69,7 +70,7 @@ class LogEntryAnalyzer:
         return get_time_diff_as(applications, START_TIME, SUBMIT_APPLICATION, FILLING_TIME, log)
 
     @staticmethod
-    def to_applications_with_time(applications, log):
+    def to_applications_with_time_to_first_statement(applications, log):
         return get_time_diff_as(applications, SUBMIT_APPLICATION, GIVE_STATEMENT, TIME_TO_STATEMENT, log)
 
     @staticmethod
