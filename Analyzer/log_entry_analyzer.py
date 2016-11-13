@@ -22,7 +22,8 @@ class LogEntryAnalyzer:
                     application[START_TIME] = log_entry[DATE]
 
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
-                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] < log_entry[DATE]:
+                # Application can be submitted several times we want the first one.
+                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] > log_entry[DATE]:
                     application[SUBMIT_APPLICATION] = log_entry[DATE]
 
             if log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
@@ -84,10 +85,11 @@ class LogEntryAnalyzer:
         municipalities = map(lambda t: t[0], municipalities_and_applications_counts)
         return {k: v for k, v in applications.iteritems() if str(v[MUNICIPALITY]) in municipalities}
 
-    def to_applications_with_start_month(self, applications):
+    @staticmethod
+    def to_applications_with_start_month(applications):
         applications_with_start_month = {}
         for application_id in applications:
             application = applications[application_id]
-            month = application[START_TIME].month
+            month = str(application[START_TIME].month)
             applications_with_start_month[application_id] = dict(application.items() + [(MONTH, month)])
         return applications_with_start_month

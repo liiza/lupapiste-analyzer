@@ -3,6 +3,8 @@ from conf_reader import Conf
 from csv_reader import CSVFile
 from log_entry_analyzer import *
 
+MONTHS = map(str, range(1, 13))
+
 RESULT_FILE = 'resources/aws_file.csv'
 
 
@@ -29,6 +31,16 @@ def to_applications(csv_file, conf, params):
     applications = analyzer.to_applications(csv_file.rows)
     applications = join(applications, conf.join_file)
 
+    # Filter by operation
+    if params.filter_by_operation:
+        applications = filter_by_operation(applications, params.filter_by)
+
+    # Filter data with biggest municipalities
+    if params.filter_by_municipality:
+        applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
+
+    applications = analyzer.to_applications_with_time_to_verdict(applications, params.logarithmic_numbers)
+
     # Rich data with filling time if wanted
     if params.application_filling_time:
         applications = analyzer.to_applications_with_filling_time(applications, params.logarithmic_numbers)
@@ -39,21 +51,13 @@ def to_applications(csv_file, conf, params):
 
     applications = analyzer.to_applications_with_start_month(applications)
 
-    # Filter data with biggest municipalities
-    if params.filter_by_municipality:
-        applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
-
-    if params.filter_by_operation:
-        applications = filter_by_operation(applications, params.filter_by)
-
-    applications = analyzer.to_applications_with_time_to_verdict(applications, params.logarithmic_numbers)
-
     return applications
 
 
 def join(applications, join_file):
     if join_file != "":
-        columns2 = [APPLICATION_ID, MUNICIPALITY, PERMIT_TYPE, STATE, OPERATION, "operationId2", "operationId3", "operations", CREATED_DATE, SUBMITTED_DATE, "sentDate",
+        columns2 = [APPLICATION_ID, MUNICIPALITY, PERMIT_TYPE, STATE, OPERATION,
+                    "operationId2", "operationId3", "operations", CREATED_DATE, SUBMITTED_DATE, "sentDate",
                     VERDICT_GIVEN, "canceledDate", "isCancelled", "lon", "lat"]
         csv_file_2 = CSVFile(columns2, join_file, ";")
         applications = inner_join(applications, csv_file_2)
@@ -83,6 +87,7 @@ def get_result_file_header(params):
         header.append(OPERATION)
     if params.month:
         header.append(MONTH)
+        header.extend(MONTHS)
     return header
 
 
@@ -90,10 +95,16 @@ def write_as_csv(applications, header, name=RESULT_FILE):
     lines = [",".join(header)]
     for application_id in applications:
         application = applications[application_id]
-        line = ",".join(map(lambda h: str(application[h]), header))
+        line = ",".join(map(lambda h: get_value(application, h), header))
         lines.append(line)
     with open('%s' % name, 'w') as csv:
         csv.write("\n".join(lines))
+
+
+def get_value(application, h):
+    if h in MONTHS:
+        return str(1) if application[MONTH] == h else str(0)
+    return str(application[h])
 
 
 def log_statistics(csv_file, applications):
