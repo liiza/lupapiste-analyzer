@@ -32,7 +32,8 @@ def get_municipalities(rows):
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
 # applicationId,municipality,timeToVerdict,filling-time,time-to-statement,operation
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, TIME_TO_STATEMENT, OPERATION], "resources/aws_file_maalampo.csv")
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION, MONTH], "resources/aws_file_maalampo.csv")
+
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, TIME_TO_STATEMENT, OPERATION, MONTH], "resources/aws_file.csv")
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION], "resources/aws_file.csv")
 
 
@@ -47,8 +48,8 @@ def plot_avgs():
 
 
 def plot_box_plot_by_municipalities():
-    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
-    grouped = grouped_by_municipality(rows, TIME_TO_VERDICT)
+    rows = csv_file.get_filtered_rows(TIME_TO_STATEMENT, lambda x: x != 0)
+    grouped = grouped_by_municipality(rows, TIME_TO_STATEMENT)
     x = []
     for key, group in grouped:
         x.append(map(lambda x: x[1], group))
@@ -62,8 +63,8 @@ def plot_box_plot_by_municipalities():
 
 
 def plot_box_plot_by_month():
-    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
-    grouped = grouped_by_month(rows, TIME_TO_VERDICT)
+    rows = csv_file.get_filtered_rows(TIME_TO_STATEMENT, lambda x: x != 0)
+    grouped = grouped_by_month(rows, TIME_TO_STATEMENT)
     x = []
     for key, group in grouped:
         x.append(map(lambda x: x[1], group))
@@ -97,7 +98,7 @@ def time_by_filling_time():
     for m in municipalities:
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
         filling_times = map(lambda row: (row[FILLING_TIME]), rows)
-        times_to_verdict = map(lambda row: (row[TIME_TO_VERDICT]), rows)
+        times_to_verdict = map(lambda row: (row[TIME_TO_STATEMENT]), rows)
         plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
@@ -108,5 +109,5 @@ def time_by_filling_time():
 
 
 plot_box_plot_by_month()
-# plot_box_plot_by_municipalities()
+#plot_box_plot_by_municipalities()
 # time_by_filling_time()

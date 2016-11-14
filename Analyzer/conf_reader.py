@@ -48,7 +48,8 @@ class Conf:
              "filter_by": self.should_filter_by(self.filter_by),
              MUNICIPALITY: self.should_filter_by_municipality(self.params),
              "log": self.should_use_logarithmic_numbers(self.params),
-             MONTH :self.should_add_start_month(self.params)}
+             MONTH: self.should_add_start_month(self.params),
+             TIME_TO_VERDICT: self.should_get_time_to_verdict(self.params)}
         )
 
     @staticmethod
@@ -102,6 +103,14 @@ class Conf:
             print "add start month"
         return use_month
 
+    def should_get_time_to_verdict(self, params):
+        time_to_verdict = params.find(TIME_TO_VERDICT) >= 0
+        if time_to_verdict:
+            print "add time to verdict"
+        return time_to_verdict
+
+
+
 
 class Params:
     def __init__(self, params):
@@ -113,3 +122,4 @@ class Params:
         self.filter_by_municipality = params[MUNICIPALITY]
         self.logarithmic_numbers = params["log"]
         self.month = params[MONTH]
+        self.time_to_verdict = params[TIME_TO_VERDICT]

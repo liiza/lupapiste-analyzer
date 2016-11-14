@@ -19,7 +19,7 @@ PERMIT_TYPE = "permitType"
 VERDICT_GIVEN = "verdictGivenDate"
 SUBMITTED_DATE = "submittedDate"  # Sopernovus
 STATE = "state"
-TIME_TO_VERDICT = "timeToVerdict"
+TIME_TO_VERDICT = "time-to-verdict"
 CREATED_DATE = "createdDate"
 MONTH = "start_month"
 

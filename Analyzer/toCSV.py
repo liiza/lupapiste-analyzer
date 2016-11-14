@@ -76,7 +76,7 @@ def filter_by_operation(applications, filter_by):
 
 
 def get_result_file_header(params):
-    header = [APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT]
+    header = [APPLICATION_ID, MUNICIPALITY]
     if params.get_action_count:
         header.append(ACTION_COUNT)
     if params.application_filling_time:
@@ -88,6 +88,8 @@ def get_result_file_header(params):
     if params.month:
         header.append(MONTH)
         header.extend(MONTHS)
+    if params.time_to_verdict:
+        header.append(TIME_TO_VERDICT)
     return header
 
 
