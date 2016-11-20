@@ -87,7 +87,6 @@ def get_result_file_header(params):
         header.append(OPERATION)
     if params.month:
         header.append(MONTH)
-        header.extend(MONTHS)
     if params.time_to_verdict:
         header.append(TIME_TO_VERDICT)
     return header
@@ -97,17 +96,10 @@ def write_as_csv(applications, header, name=RESULT_FILE):
     lines = [",".join(header)]
     for application_id in applications:
         application = applications[application_id]
-        line = ",".join(map(lambda h: get_value(application, h), header))
+        line = ",".join(map(lambda h: str(application[h]), header))
         lines.append(line)
     with open('%s' % name, 'w') as csv:
         csv.write("\n".join(lines))
-
-
-def get_value(application, h):
-    if h in MONTHS:
-        return str(1) if application[MONTH] == h else str(0)
-    return str(application[h])
-
 
 def log_statistics(csv_file, applications):
     print str(len(csv_file.rows)) + " rows in csv file"
