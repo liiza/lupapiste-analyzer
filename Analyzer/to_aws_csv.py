@@ -33,13 +33,15 @@ def to_applications(csv_file, conf, params):
 
     # Filter by operation
     if params.filter_by_operation:
-        applications = filter_by_operation(applications, params.filter_by)
+        applications = analyzer.filter_by_operation(applications, params.filter_by)
 
     # Filter data with biggest municipalities
     if params.filter_by_municipality:
         applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
 
-    applications = analyzer.to_applications_with_time_to_verdict(applications, params.logarithmic_numbers)
+    # Add time to verdict
+    if params.time_to_verdict:
+        applications = analyzer.to_applications_with_time_to_verdict(applications, params.logarithmic_numbers)
 
     # Rich data with filling time if wanted
     if params.application_filling_time:
@@ -49,7 +51,9 @@ def to_applications(csv_file, conf, params):
     if params.get_time_to_first_statement:
         applications = analyzer.to_applications_with_time_to_first_statement(applications, params.logarithmic_numbers)
 
-    applications = analyzer.to_applications_with_start_month(applications)
+    # Add the month application was created
+    if params.month:
+        applications = analyzer.to_applications_with_start_month(applications)
 
     return applications
 
@@ -64,15 +68,6 @@ def join(applications, join_file):
         write_as_csv(applications, [APPLICATION_ID, MUNICIPALITY, VERDICT_GIVEN, SUBMITTED_DATE], "resources/joined.csv")
 
     return applications
-
-
-def filter_by_operation(applications, filter_by):
-    tmp = {}
-    for application_id in applications:
-        application = applications[application_id]
-        if application[OPERATION] == filter_by:
-            tmp[application_id] = application
-    return tmp
 
 
 def get_result_file_header(params):

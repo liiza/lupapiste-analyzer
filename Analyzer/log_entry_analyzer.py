@@ -93,3 +93,13 @@ class LogEntryAnalyzer:
             month = str(application[START_TIME].month)
             applications_with_start_month[application_id] = dict(application.items() + [(MONTH, month)])
         return applications_with_start_month
+
+
+    @staticmethod
+    def filter_by_operation(applications, filter_by):
+        tmp = {}
+        for application_id in applications:
+            application = applications[application_id]
+            if application[OPERATION] == filter_by:
+                tmp[application_id] = application
+        return tmp
