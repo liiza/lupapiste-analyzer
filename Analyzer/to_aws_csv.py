@@ -2,6 +2,7 @@
 from conf_reader import Conf
 from csv_reader import CSVFile
 from log_entry_analyzer import *
+from datetime import datetime
 
 MONTHS = map(str, range(1, 13))
 
@@ -33,11 +34,13 @@ def to_applications(csv_file, conf, params):
 
     # Filter by operation
     if params.filter_by_operation:
-        applications = analyzer.filter_by_operation(applications, params.filter_by)
+        applications = analyzer.filter_applications_by_operation(applications, params.filter_by)
 
     # Filter data with biggest municipalities
     if params.filter_by_municipality:
+        before = datetime.now()
         applications = analyzer.filter_applications_with_biggest_municipalities(applications, 5)
+        print (datetime.now() - before).seconds
 
     # Add time to verdict
     if params.time_to_verdict:

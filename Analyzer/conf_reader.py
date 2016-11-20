@@ -44,8 +44,8 @@ class Conf:
             {ACTION_COUNT: self.should_get_action_count(self.params),
              TIME_TO_STATEMENT: self.should_get_time_to_first_statement(self.params),
              FILLING_TIME: self.should_get_application_filling_time(self.params),
-             "filter": len(self.should_filter_by(self.filter_by)) > 0,
-             "filter_by": self.should_filter_by(self.filter_by),
+             "filter": len(self.filter_by_operation(self.filter_by)) > 0,
+             "filter_by": self.filter_by_operation(self.filter_by),
              MUNICIPALITY: self.should_filter_by_municipality(self.params),
              "log": self.should_use_logarithmic_numbers(self.params),
              MONTH: self.should_add_start_month(self.params),
@@ -74,19 +74,19 @@ class Conf:
         return get_filling_time
 
     @staticmethod
-    def should_filter_by(fltr_by):
-        filter_by_operation = len(fltr_by) > 0
-        filter_by = ""
-        if filter_by_operation:
-            filter_by = fltr_by
-            print "filter by " + filter_by
+    def filter_by_operation(fltr_by):
+        fltr_by_operation = len(fltr_by) > 0
+        filter_by = []
+        if fltr_by_operation:
+            filter_by = fltr_by.split()
+            print "filter by " + str(filter_by)
         return filter_by
 
     @staticmethod
     def should_filter_by_municipality(params):
         filter_by_municipality = params.find(MUNICIPALITY) >= 0
         if filter_by_municipality:
-            print "filter by biggst municipalities"
+            print "filter by biggest municipalities"
         return filter_by_municipality
 
     @staticmethod

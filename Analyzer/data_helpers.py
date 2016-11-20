@@ -13,7 +13,7 @@ def get_time_diff_as(applications, start, end, param, log):
         if application[end] < application[start]:
             continue
         delta = application[end] - application[start]
-        diff = delta.seconds + (delta.days * 24 * 60 * 60)
+        diff = delta.total_seconds()
         time = to_log(diff) if log else diff
         applications_with_time[application_id] = dict(application.items() + [(param, time)])
     return applications_with_time

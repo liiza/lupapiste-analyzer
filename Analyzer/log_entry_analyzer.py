@@ -96,10 +96,10 @@ class LogEntryAnalyzer:
 
 
     @staticmethod
-    def filter_by_operation(applications, filter_by):
+    def filter_applications_by_operation(applications, filter_by):
         tmp = {}
         for application_id in applications:
             application = applications[application_id]
-            if application[OPERATION] == filter_by:
+            if application[OPERATION] in filter_by:
                 tmp[application_id] = application
         return tmp

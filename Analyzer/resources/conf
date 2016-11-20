@@ -1,12 +1,6 @@
-#lupapiste-usage-hour-2015120110.csv
-#lupapiste-usage-day-20151201.csv
-#lupapiste-usage-week-20151201.csv
-#lupapiste-usage-20160914.csv
-#lupapiste-usage-month-201512.csv
-#/Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160407.csv
-# PROD
+# PROD DATA
 /Users/liisasa/Documents/LupapisteData/lupapiste-usage-20160914.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
-# TEST
+# TEST DATA
 #/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
 filling-time municipality start_month time-to-verdict
@@ -16,6 +10,4 @@ filling-time municipality start_month time-to-verdict
 #time-to-statement
 #log
 #action-count
-#puun-kaataminen
-maalampo
-#pientalo
+puun-kaataminen maalampo pientalo
