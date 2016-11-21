@@ -4,8 +4,6 @@ from csv_reader import CSVFile
 from log_entry_analyzer import *
 from datetime import datetime
 
-MONTHS = map(str, range(1, 13))
-
 RESULT_FILE = 'resources/aws_file.csv'
 
 
@@ -98,6 +96,7 @@ def write_as_csv(applications, header, name=RESULT_FILE):
         lines.append(line)
     with open('%s' % name, 'w') as csv:
         csv.write("\n".join(lines))
+
 
 def log_statistics(csv_file, applications):
     print str(len(csv_file.rows)) + " rows in csv file"
