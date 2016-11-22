@@ -37,4 +37,4 @@ def merge_dicts(*dict_args):
 def to_log(num):
     if num == 0:
         return 0
-    return log(int(num))
+    return log(float(num))
