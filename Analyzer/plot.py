@@ -41,7 +41,7 @@ def get_municipalities(rows):
 # applicationId,municipality,timeToVerdict,filling-time,time-to-statement,operation
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, TIME_TO_STATEMENT, OPERATION], "resources/aws_file_maalampo.csv")
 
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, FILLING_TIME, OPERATION, MONTH, TIME_TO_VERDICT], "resources/aws_file_all.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, OPERATION, TIME_TO_VERDICT], "resources/aws_file.csv")
 
 
 # csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION], "resources/aws_file.csv")
@@ -67,7 +67,7 @@ def plot_box_plot_by_municipalities():
         y.append(key)
 
     plt.boxplot(x)
-    plt.ylabel('Time to verdict')
+    plt.ylabel('Time to verdict (s)')
     plt.xlabel('Municipalities')
     plt.xticks(range(1, len(y) + 1), list(y))
     plt.show()
@@ -136,7 +136,21 @@ def time_by_filling_time():
     plt.show()
 
 
+def histogram_of_applications_per_municipality():
+    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
+    grouped = grouped_by_municipality(rows, TIME_TO_VERDICT)
+    applications_per_municipality = []
+    for key, group in grouped:
+        applications_per_municipality.append(sum(1 for e in group))
+    plt.hist(applications_per_municipality, bins=30, color="green")
+    plt.xlabel("Applications")
+    plt.ylabel("Municipalities")
+    plt.title("Applications per municipality")
+    plt.show()
+
+
 # plot_box_plot_by_month()
-# plot_box_plot_by_municipalities()
-plot_box_plot_by_operation()
+plot_box_plot_by_municipalities()
+# plot_box_plot_by_operation()
 # time_by_filling_time()
+# histogram_of_applications_per_municipality()

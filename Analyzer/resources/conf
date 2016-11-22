@@ -3,11 +3,15 @@
 # TEST DATA
 #/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
-filling-time municipality start_month time-to-verdict
+#filling-time
+time-to-verdict municipality
+#municipality log
+#start_month
 #time-to-statement
 #time-to-verdict
 #action-count
 #time-to-statement
 #log
 #action-count
-puun-kaataminen maalampo pientalo
+#puun-kaataminen maalampo
+pientalo
