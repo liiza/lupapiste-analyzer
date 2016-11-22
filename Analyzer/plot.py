@@ -37,14 +37,12 @@ def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
-# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME], "resources/aws_file_puunkaatamine.csv")
-# applicationId,municipality,timeToVerdict,filling-time,time-to-statement,operation
-# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, TIME_TO_STATEMENT, OPERATION], "resources/aws_file_maalampo.csv")
-
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, OPERATION, TIME_TO_VERDICT], "resources/aws_file.csv")
+# applicationId,municipality,operation,start_month,time-to-verdict
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, OPERATION, MONTH, TIME_TO_VERDICT], "resources/aws_file_month_pientalo_no_log.csv")
 
 
-# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION], "resources/aws_file.csv")
+# applicationId,municipality,timeToVerdict,filling-time,operation,start_month
+# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION, MONTH], "resources/aws_file_maalampo.csv")
 
 
 def plot_avgs():
@@ -79,13 +77,30 @@ def plot_box_plot_by_month():
     x = []
     y = []
     for key, group in grouped:
-        x.append(map(lambda x: x[1], group))
+        x.append(map(lambda x: to_log(x[1]), group))
         y.append(key)
 
     plt.boxplot(x)
     plt.ylabel('Time to verdict')
     plt.xlabel('Months')
     plt.xticks(range(1, 1 + len(y)), y)
+    plt.show()
+
+
+def sum_by_month():
+    rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
+    grouped = grouped_by_month(rows, TIME_TO_VERDICT)
+    x = []
+    y = []
+    for key, group in grouped:
+        x.append(len(map(lambda x: x, group)))
+        y.append(key)
+
+    w = 0.7
+    plt.bar(range(len(x)), x, width=w)
+    plt.ylabel('Applications')
+    plt.xlabel('Months')
+    plt.xticks(map(lambda x : x+ w/2, range(len(y))), y)
     plt.show()
 
 
@@ -131,8 +146,27 @@ def time_by_filling_time():
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
 
-    plt.xlabel("Filling time (s)")
-    plt.ylabel("Time to verdict (s)")
+    plt.xlabel("Filling time ")
+    plt.ylabel("Time to verdict ")
+    plt.show()
+
+
+def process_time_by_actions():
+    municipalities = list(get_municipalities(csv_file.rows))
+    mun_color_map = {}
+    for m in municipalities:
+        mun_color_map[m] = colors[municipalities.index(m)]
+
+    for m in municipalities:
+        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        actions = map(lambda row: to_log(row[ACTION_COUNT]), rows)
+        times_to_verdict = map(lambda row: to_log(row[TIME_TO_VERDICT]), rows)
+        plt.plot(actions, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
+
+    plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
+
+    plt.xlabel("Action count")
+    plt.ylabel("Time to verdict ")
     plt.show()
 
 
@@ -149,8 +183,11 @@ def histogram_of_applications_per_municipality():
     plt.show()
 
 
-# plot_box_plot_by_month()
-plot_box_plot_by_municipalities()
+plot_box_plot_by_month()
+# plot_box_plot_by_municipalities()
 # plot_box_plot_by_operation()
 # time_by_filling_time()
+# time_by_filling_time(True)
 # histogram_of_applications_per_municipality()
+# process_time_by_actions()
+# sum_by_month()

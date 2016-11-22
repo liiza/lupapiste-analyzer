@@ -17,8 +17,7 @@ class LogEntryAnalyzer:
         for log_entry in log_entries:
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
-            if self.get_filling_time:
-                if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
+            if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
                     application[START_TIME] = log_entry[DATE]
 
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
@@ -30,7 +29,7 @@ class LogEntryAnalyzer:
                 if GIVE_STATEMENT not in application or application[GIVE_STATEMENT] > log_entry[DATE]:
                     application[GIVE_STATEMENT] = log_entry[DATE]
 
-            if self.get_action_count and log_entry[ROLE] == APPLICANT:
+            if self.get_action_count and (SUBMIT_APPLICATION not in application or log_entry[DATE] < application[SUBMIT_APPLICATION]):
                 if ACTION_COUNT not in application:
                     application[ACTION_COUNT] = 0
                 application[ACTION_COUNT] += 1
