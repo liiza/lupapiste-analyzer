@@ -5,12 +5,14 @@ from data_helpers import *
 
 
 class LogEntryAnalyzer:
-    def __init__(self, get_time_to_first_statement=False, get_action_count=False, get_filling_time=False, filter_by_operation=False, filter_by=None):
+    def __init__(self, get_time_to_first_statement=False, get_action_count=False, get_filling_time=False, filter_by_operation=False, filter_by=None,
+                 calculate_attachments=False):
         self.get_time_to_first_statement = get_time_to_first_statement
         self.get_action_count = get_action_count
         self.get_filling_time = get_filling_time
         self.filter_by_operation = filter_by_operation
         self.filter_by = filter_by
+        self.calculate_attachments = calculate_attachments
 
     def to_applications(self, log_entries):
         applications = {}
@@ -18,7 +20,7 @@ class LogEntryAnalyzer:
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
             if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
-                    application[START_TIME] = log_entry[DATE]
+                application[START_TIME] = log_entry[DATE]
 
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
                 # Application can be submitted several times we want the first one.
@@ -29,11 +31,15 @@ class LogEntryAnalyzer:
                 if GIVE_STATEMENT not in application or application[GIVE_STATEMENT] > log_entry[DATE]:
                     application[GIVE_STATEMENT] = log_entry[DATE]
 
+            if self.calculate_attachments and log_entry[ACTION] == "upload-attachment":
+                if ATTACHMENT_COUNT not in application:
+                    application[ATTACHMENT_COUNT] = 0
+                application[ATTACHMENT_COUNT] += 1
+
             if self.get_action_count and (SUBMIT_APPLICATION not in application or log_entry[DATE] < application[SUBMIT_APPLICATION]):
                 if ACTION_COUNT not in application:
                     application[ACTION_COUNT] = 0
                 application[ACTION_COUNT] += 1
-
 
         return applications
 
@@ -44,6 +50,7 @@ class LogEntryAnalyzer:
         else:
             application = {APPLICATION_ID: log_entry[APPLICATION_ID], MUNICIPALITY: log_entry[MUNICIPALITY]}
             applications[application_id] = application
+            application[ATTACHMENT_COUNT] = 0
             return application
 
     @staticmethod
@@ -92,7 +99,6 @@ class LogEntryAnalyzer:
             month = str(application[START_TIME].month)
             applications_with_start_month[application_id] = dict(application.items() + [(MONTH, month)])
         return applications_with_start_month
-
 
     @staticmethod
     def filter_applications_by_operation(applications, filter_by):

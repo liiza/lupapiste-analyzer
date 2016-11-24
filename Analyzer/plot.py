@@ -38,11 +38,11 @@ def get_municipalities(rows):
 
 
 # applicationId,municipality,operation,start_month,time-to-verdict
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, OPERATION, MONTH, TIME_TO_VERDICT], "resources/aws_file_month_pientalo_no_log.csv")
+# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, OPERATION, MONTH, TIME_TO_VERDICT], "resources/aws_file_month_pientalo_no_log.csv")
 
 
-# applicationId,municipality,timeToVerdict,filling-time,operation,start_month
-# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, TIME_TO_VERDICT, FILLING_TIME, OPERATION, MONTH], "resources/aws_file_maalampo.csv")
+# applicationId,municipality,filling-time,operation,time-to-verdict
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, FILLING_TIME, OPERATION, TIME_TO_VERDICT], "resources/aws_file_pientalo_no_log_backup.csv")
 
 
 def plot_avgs():
@@ -100,7 +100,7 @@ def sum_by_month():
     plt.bar(range(len(x)), x, width=w)
     plt.ylabel('Applications')
     plt.xlabel('Months')
-    plt.xticks(map(lambda x : x+ w/2, range(len(y))), y)
+    plt.xticks(map(lambda x: x + w / 2, range(len(y))), y)
     plt.show()
 
 
@@ -138,16 +138,16 @@ def time_by_filling_time():
     for m in municipalities:
         mun_color_map[m] = colors[municipalities.index(m)]
 
-    for m in municipalities:
+    for index, m in enumerate(municipalities):
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
         filling_times = map(lambda row: to_log(row[FILLING_TIME]), rows)
         times_to_verdict = map(lambda row: to_log(row[TIME_TO_VERDICT]), rows)
-        plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
+        plt.subplot(len(municipalities), 1, index)
+        plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=5)
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
-
-    plt.xlabel("Filling time ")
-    plt.ylabel("Time to verdict ")
+    # plt.ylabel("Time to verdict ")
+    # plt.xlabel("Filling time ")
     plt.show()
 
 
@@ -183,10 +183,10 @@ def histogram_of_applications_per_municipality():
     plt.show()
 
 
-plot_box_plot_by_month()
+# plot_box_plot_by_month()
 # plot_box_plot_by_municipalities()
 # plot_box_plot_by_operation()
-# time_by_filling_time()
+time_by_filling_time()
 # time_by_filling_time(True)
 # histogram_of_applications_per_municipality()
 # process_time_by_actions()

@@ -49,7 +49,8 @@ class Conf:
              MUNICIPALITY: self.should_filter_by_municipality(self.params),
              "log": self.should_use_logarithmic_numbers(self.params),
              MONTH: self.should_add_start_month(self.params),
-             TIME_TO_VERDICT: self.should_get_time_to_verdict(self.params)}
+             TIME_TO_VERDICT: self.should_get_time_to_verdict(self.params),
+             ATTACHMENT_COUNT: self.should_add_attachment_count(self.params)}
         )
 
     @staticmethod
@@ -103,13 +104,19 @@ class Conf:
             print "add start month"
         return use_month
 
-    def should_get_time_to_verdict(self, params):
+    @staticmethod
+    def should_get_time_to_verdict(params):
         time_to_verdict = params.find(TIME_TO_VERDICT) >= 0
         if time_to_verdict:
             print "add time to verdict"
         return time_to_verdict
 
-
+    @staticmethod
+    def should_add_attachment_count(params):
+        attachment_count = params.find(ATTACHMENT_COUNT) >=0
+        if attachment_count:
+            print "add attachment count"
+        return attachment_count
 
 
 class Params:
@@ -123,3 +130,4 @@ class Params:
         self.logarithmic_numbers = params["log"]
         self.month = params[MONTH]
         self.time_to_verdict = params[TIME_TO_VERDICT]
+        self.calculate_attachments = params[ATTACHMENT_COUNT]

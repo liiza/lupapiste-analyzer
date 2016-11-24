@@ -25,7 +25,8 @@ def to_applications(csv_file, conf, params):
                                 params.get_action_count,
                                 params.application_filling_time,
                                 params.filter_by_operation,
-                                params.filter_by)
+                                params.filter_by,
+                                params.calculate_attachments)
     # Read applications
     applications = analyzer.to_applications(csv_file.rows)
     applications = join(applications, conf.join_file)
@@ -85,6 +86,8 @@ def get_result_file_header(params):
         header.append(MONTH)
     if params.time_to_verdict:
         header.append(TIME_TO_VERDICT)
+    if params.calculate_attachments:
+        header.append(ATTACHMENT_COUNT)
     return header
 
 
