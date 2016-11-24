@@ -42,7 +42,10 @@ def get_municipalities(rows):
 
 
 # applicationId,municipality,filling-time,operation,time-to-verdict
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, FILLING_TIME, OPERATION, TIME_TO_VERDICT], "resources/aws_file_pientalo_no_log_backup.csv")
+# applicationId,municipality,filling-time,operation,start_month,time-to-verdict,attachment-count
+# applicationId,municipality,action-count,filling-time,operation,time-to-verdict
+# applicationId,municipality,action-count,filling-time,operation,start_month,time-to-verdict
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, ACTION_COUNT, FILLING_TIME, OPERATION, START_TIME, TIME_TO_VERDICT], "resources/aws_file_pientalo_action_count.csv")
 
 
 def plot_avgs():
@@ -144,10 +147,12 @@ def time_by_filling_time():
         times_to_verdict = map(lambda row: to_log(row[TIME_TO_VERDICT]), rows)
         plt.subplot(len(municipalities), 1, index)
         plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=5)
+        plt.axis([4, 18, 12, 17])
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
+    # plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.5, 0.95))
+    # plt.xlabel("Filling Time)
     # plt.ylabel("Time to verdict ")
-    # plt.xlabel("Filling time ")
     plt.show()
 
 
@@ -159,13 +164,32 @@ def process_time_by_actions():
 
     for m in municipalities:
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
-        actions = map(lambda row: to_log(row[ACTION_COUNT]), rows)
-        times_to_verdict = map(lambda row: to_log(row[TIME_TO_VERDICT]), rows)
+        actions = map(lambda row: (row[ACTION_COUNT]), rows)
+        times_to_verdict = map(lambda row: (row[TIME_TO_VERDICT]), rows)
         plt.plot(actions, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
 
     plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
 
     plt.xlabel("Action count")
+    plt.ylabel("Time to verdict ")
+    plt.show()
+
+
+def process_time_by_attachment_count():
+    municipalities = list(get_municipalities(csv_file.rows))
+    mun_color_map = {}
+    for m in municipalities:
+        mun_color_map[m] = colors[municipalities.index(m)]
+
+    for m in municipalities:
+        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        actions = map(lambda row: (row[ATTACHMENT_COUNT]), rows)
+        times_to_verdict = map(lambda row: (row[TIME_TO_VERDICT]), rows)
+        plt.plot(actions, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
+
+    plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
+
+    plt.xlabel("Attachment count")
     plt.ylabel("Time to verdict ")
     plt.show()
 
@@ -183,11 +207,14 @@ def histogram_of_applications_per_municipality():
     plt.show()
 
 
+
+
 # plot_box_plot_by_month()
 # plot_box_plot_by_municipalities()
 # plot_box_plot_by_operation()
-time_by_filling_time()
+# time_by_filling_time()
 # time_by_filling_time(True)
 # histogram_of_applications_per_municipality()
-# process_time_by_actions()
+process_time_by_actions()
 # sum_by_month()
+# process_time_by_attachment_count()
