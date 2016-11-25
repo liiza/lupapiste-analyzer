@@ -50,7 +50,8 @@ class Conf:
              "log": self.should_use_logarithmic_numbers(self.params),
              MONTH: self.should_add_start_month(self.params),
              TIME_TO_VERDICT: self.should_get_time_to_verdict(self.params),
-             ATTACHMENT_COUNT: self.should_add_attachment_count(self.params)}
+             ATTACHMENT_COUNT: self.should_add_attachment_count(self.params),
+             RUNNING_MONTH: self.should_add_running_month(self.params)}
         )
 
     @staticmethod
@@ -118,6 +119,14 @@ class Conf:
             print "add attachment count"
         return attachment_count
 
+    @staticmethod
+    def should_add_running_month(params):
+        running_month = params.find(ATTACHMENT_COUNT) >=0
+        if running_month:
+            print "add running month"
+        return running_month
+
+
 
 class Params:
     def __init__(self, params):
@@ -131,3 +140,4 @@ class Params:
         self.month = params[MONTH]
         self.time_to_verdict = params[TIME_TO_VERDICT]
         self.calculate_attachments = params[ATTACHMENT_COUNT]
+        self.running_month = params[RUNNING_MONTH]

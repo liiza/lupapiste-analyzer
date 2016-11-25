@@ -37,15 +37,8 @@ def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
-# applicationId,municipality,operation,start_month,time-to-verdict
-# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, OPERATION, MONTH, TIME_TO_VERDICT], "resources/aws_file_month_pientalo_no_log.csv")
-
-
-# applicationId,municipality,filling-time,operation,time-to-verdict
-# applicationId,municipality,filling-time,operation,start_month,time-to-verdict,attachment-count
-# applicationId,municipality,action-count,filling-time,operation,time-to-verdict
-# applicationId,municipality,action-count,filling-time,operation,start_month,time-to-verdict
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, ACTION_COUNT, FILLING_TIME, OPERATION, START_TIME, TIME_TO_VERDICT], "resources/aws_file_pientalo_action_count.csv")
+# applicationId,municipality,running-month,operation,time-to-verdict
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, RUNNING_MONTH, OPERATION, TIME_TO_VERDICT], "resources/aws_file.csv")
 
 
 def plot_avgs():
@@ -194,6 +187,45 @@ def process_time_by_attachment_count():
     plt.show()
 
 
+def process_time_by_running_month():
+    mun_color_map, municipalities = get_municipality_color_map()
+
+    for index, m in enumerate(municipalities):
+        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        running_months = map(lambda row: (row[RUNNING_MONTH]), rows)
+        process_times = map(lambda row: (row[TIME_TO_VERDICT]), rows)
+
+        months, applications_per_month = applications_grouped_by_running_month(rows)
+
+        plt.subplot(3, 2, 1 + index)
+        plt.plot(running_months, process_times, str(mun_color_map[m]) + "o", months, map(lambda x: x * pow(10, 6), applications_per_month), 'r')
+
+    # plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
+
+    plt.xlabel("Running month")
+    plt.ylabel("Time to verdict")
+    plt.show()
+
+
+def applications_grouped_by_running_month(file_rows):
+    applications_per_running_month = []
+    months = []
+    grouped = grouped_by(file_rows, RUNNING_MONTH, TIME_TO_VERDICT)
+    for key, group in grouped:
+        verdict_times_per_month = map(lambda t: t[1], group)
+        applications_per_running_month.append(len(verdict_times_per_month))
+        months.append(key)
+    return months, applications_per_running_month
+
+
+def get_municipality_color_map():
+    municipalities = list(get_municipalities(csv_file.rows))
+    mun_color_map = {}
+    for m in municipalities:
+        mun_color_map[m] = colors[municipalities.index(m)]
+    return mun_color_map, municipalities
+
+
 def histogram_of_applications_per_municipality():
     rows = csv_file.get_filtered_rows(TIME_TO_VERDICT, lambda x: x != 0)
     grouped = grouped_by_municipality(rows, TIME_TO_VERDICT)
@@ -207,14 +239,13 @@ def histogram_of_applications_per_municipality():
     plt.show()
 
 
-
-
 # plot_box_plot_by_month()
 # plot_box_plot_by_municipalities()
 # plot_box_plot_by_operation()
 # time_by_filling_time()
 # time_by_filling_time(True)
 # histogram_of_applications_per_municipality()
-process_time_by_actions()
+# process_time_by_actions()
 # sum_by_month()
 # process_time_by_attachment_count()
+process_time_by_running_month()

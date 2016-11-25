@@ -3,7 +3,7 @@
 # TEST DATA
 #/Users/liisasa/Documents/LupapisteData/short.csv /Users/liisasa/Dippa/applications-operative-on-20160914-20160918.csv
 # Params
-time-to-verdict municipality start_month filling-time action-count
+time-to-verdict municipality running-month
 #filling-time action-count
 #municipality log
 #start_month

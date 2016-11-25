@@ -1,8 +1,9 @@
 #!/usr/bin/python
+from datetime import datetime
+
 from conf_reader import Conf
 from csv_reader import CSVFile
 from log_entry_analyzer import *
-from datetime import datetime
 
 RESULT_FILE = 'resources/aws_file.csv'
 
@@ -57,6 +58,8 @@ def to_applications(csv_file, conf, params):
     if params.month:
         applications = analyzer.to_applications_with_start_month(applications)
 
+    if params.running_month:
+        applications = analyzer.to_applications_with_running_month(applications)
     return applications
 
 
@@ -88,6 +91,8 @@ def get_result_file_header(params):
         header.append(TIME_TO_VERDICT)
     if params.calculate_attachments:
         header.append(ATTACHMENT_COUNT)
+    if params.running_month:
+        header.append(RUNNING_MONTH)
     return header
 
 

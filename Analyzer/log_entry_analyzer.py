@@ -101,6 +101,20 @@ class LogEntryAnalyzer:
         return applications_with_start_month
 
     @staticmethod
+    def to_applications_with_running_month(applications):
+        applications_with_running_month = {}
+        for application_id in applications:
+            application = applications[application_id]
+            month = LogEntryAnalyzer.get_running_month(application[START_TIME])
+            applications_with_running_month[application_id] = dict(application.items() + [(RUNNING_MONTH, month)])
+        return applications_with_running_month
+
+    @staticmethod
+    def get_running_month(start_time):
+        # We wont the running month from the start of the service
+        return str((start_time.year - 2013) * 12 + start_time.month)
+
+    @staticmethod
     def filter_applications_by_operation(applications, filter_by):
         tmp = {}
         for application_id in applications:
