@@ -1,7 +1,8 @@
 import operator
 from itertools import groupby
 
-from data_helpers import *
+from cell_names import *
+from data_helpers import get_time_diff_as, merge_dicts
 
 
 class LogEntryAnalyzer:
@@ -122,3 +123,32 @@ class LogEntryAnalyzer:
             if application[OPERATION] in filter_by:
                 tmp[application_id] = application
         return tmp
+
+    @staticmethod
+    def applications_with_applications_per_month(applications):
+        applications_with_per_month = {}
+        with_per_month = LogEntryAnalyzer.get_application_per_month_dict(applications)
+        for application_id in applications:
+            application = applications[application_id]
+            applications_with_per_month[application_id] = dict(application.items() + [(PER_MONTH, with_per_month[application_id])])
+        return applications_with_per_month
+
+    @staticmethod
+    def get_application_per_month_dict(applications):
+        grouped_by_running_month = LogEntryAnalyzer.grouped_by(applications, RUNNING_MONTH)
+        with_per_month = {}
+        for month, group in grouped_by_running_month:
+            applications = map(lambda t: t[1], group)
+            applications_per_month = len(applications)
+            with_per_this_month = LogEntryAnalyzer.to_dict_with_value(applications, applications_per_month)
+            with_per_month = merge_dicts(with_per_month, with_per_this_month)
+        return with_per_month
+
+    @staticmethod
+    def to_dict_with_value(keys, value):
+        return dict((v, value) for v in keys)
+
+    @staticmethod
+    def grouped_by(applications, target):
+        sorted_by = sorted(map(lambda application_id: (applications[application_id][target], application_id), applications), key=lambda entry: entry[0])
+        return groupby(sorted_by, lambda x: x[0])

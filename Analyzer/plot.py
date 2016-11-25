@@ -1,9 +1,8 @@
-from csv_reader import *
-from cell_names import *
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from itertools import groupby
-from data_helpers import to_log
+import matplotlib.pyplot as plt
+
+from csv_reader import *
+from data_helpers import to_log, grouped_by_municipality, grouped_by_month, grouped_by_operation, applications_grouped_by_running_month
 
 
 def get_avg_per_municipality(csv_file):
@@ -15,30 +14,12 @@ def get_avg_per_municipality(csv_file):
     return avgs
 
 
-def grouped_by(rows, target, param):
-    sorted_by = sorted(map(lambda x: (x[target], x[param]), rows), key=lambda entry: entry[0])
-    return groupby(sorted_by, lambda x: x[0])
-
-
-def grouped_by_municipality(rows, param):
-    return grouped_by(rows, MUNICIPALITY, param)
-
-
-def grouped_by_month(rows, param):
-    sorted_by = sorted(map(lambda x: (x[MONTH], x[param]), rows), key=lambda entry: int(entry[0]))
-    return groupby(sorted_by, lambda x: x[0])
-
-
-def grouped_by_operation(rows, param):
-    return grouped_by(rows, OPERATION, param)
-
-
 def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
 
 
 # applicationId,municipality,running-month,operation,time-to-verdict
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, RUNNING_MONTH, OPERATION, TIME_TO_VERDICT], "resources/aws_file.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, RUNNING_MONTH, OPERATION, TIME_TO_VERDICT], "resources/aws_file_running_month.csv")
 
 
 def plot_avgs():
@@ -205,17 +186,6 @@ def process_time_by_running_month():
     plt.xlabel("Running month")
     plt.ylabel("Time to verdict")
     plt.show()
-
-
-def applications_grouped_by_running_month(file_rows):
-    applications_per_running_month = []
-    months = []
-    grouped = grouped_by(file_rows, RUNNING_MONTH, TIME_TO_VERDICT)
-    for key, group in grouped:
-        verdict_times_per_month = map(lambda t: t[1], group)
-        applications_per_running_month.append(len(verdict_times_per_month))
-        months.append(key)
-    return months, applications_per_running_month
 
 
 def get_municipality_color_map():

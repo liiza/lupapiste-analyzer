@@ -58,8 +58,12 @@ def to_applications(csv_file, conf, params):
     if params.month:
         applications = analyzer.to_applications_with_start_month(applications)
 
+    # Add month number from the beginning of Lupapiste life time
     if params.running_month:
         applications = analyzer.to_applications_with_running_month(applications)
+
+    applications = analyzer.applications_with_applications_per_month(applications)
+
     return applications
 
 

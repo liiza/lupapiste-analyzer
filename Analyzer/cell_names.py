@@ -24,6 +24,7 @@ TIME_TO_VERDICT = "time-to-verdict"
 CREATED_DATE = "createdDate"
 MONTH = "start_month"
 RUNNING_MONTH = "running-month"
+PER_MONTH = "per_month"
 
 date_columns = [DATE, SUBMITTED_DATE, VERDICT_GIVEN, CREATED_DATE]
 
