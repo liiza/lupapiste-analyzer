@@ -1,5 +1,6 @@
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+from random import random
 
 from csv_reader import *
 from data_helpers import to_log, grouped_by_municipality, grouped_by_month, grouped_by_operation, applications_grouped_by_running_month
@@ -16,6 +17,10 @@ def get_avg_per_municipality(csv_file):
 
 def get_municipalities(rows):
     return set(map((lambda x: x[MUNICIPALITY]), rows))
+
+
+# applicationId,municipality,filling-time,operation,time-to-verdict
+# csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, FILLING_TIME, OPERATION, TIME_TO_VERDICT], "resources/aws_file_pientalo_no_log_backup.csv")
 
 
 # applicationId,municipality,running-month,operation,time-to-verdict
@@ -115,6 +120,8 @@ def time_by_filling_time():
     for m in municipalities:
         mun_color_map[m] = colors[municipalities.index(m)]
 
+    fig = plt.figure()
+    ax = fig.add_axes([1.1, 7.1, 2.6, 1.75])
     for index, m in enumerate(municipalities):
         rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
         filling_times = map(lambda row: to_log(row[FILLING_TIME]), rows)
@@ -122,11 +129,14 @@ def time_by_filling_time():
         plt.subplot(len(municipalities), 1, index)
         plt.plot(filling_times, times_to_verdict, str(mun_color_map[m]) + "o", ms=5)
         plt.axis([4, 18, 12, 17])
+        plt.ylabel("Process time")
 
-    plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
+    plt.tight_layout(pad=2, h_pad=0, rect=[0, 0, 0.9, 1])
+    plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.2, 0.4))
     # plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.5, 0.95))
-    # plt.xlabel("Filling Time)
-    # plt.ylabel("Time to verdict ")
+    # plt.xlabel("Filling time")
+    fig.text(0.5, 0.04, 'Filling time', ha='center')
+    # plt.tight_layout(pad=0.1, w_pad=0.1, h_pad=0.1)
     plt.show()
 
 
@@ -178,13 +188,19 @@ def process_time_by_running_month():
 
         months, applications_per_month = applications_grouped_by_running_month(rows)
 
-        plt.subplot(3, 2, 1 + index)
-        plt.plot(running_months, process_times, str(mun_color_map[m]) + "o", months, map(lambda x: x * pow(10, 6), applications_per_month), 'r')
+        ax1 = plt.subplot(3, 2, 1 + index)
+        ax2 = ax1.twinx()
+        ax1.plot(running_months, process_times, str(mun_color_map[m]) + "o")
+        ax1.set_ylabel("Process time")
+
+        ax2.plot(months, applications_per_month, 'r')
+        ax2.set_ylabel("Applications per month")
+
+        ax1.set_xlabel("Running month")
 
     # plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
 
-    plt.xlabel("Running month")
-    plt.ylabel("Time to verdict")
+    plt.tight_layout(h_pad=0.0)
     plt.show()
 
 
@@ -209,13 +225,25 @@ def histogram_of_applications_per_municipality():
     plt.show()
 
 
+def linear_regression():
+    k = 3
+    x = range(100)
+    y = map(lambda i: (i * k) + ((0.5 - random()) * 100), x)
+
+    plt.plot(x, y, "ro")
+    plt.plot(x, map(lambda j: k * j, x), linewidth=2.0)
+    plt.xlabel("Sample values")
+    plt.ylabel("Sample targets")
+    plt.show()
+
 # plot_box_plot_by_month()
 # plot_box_plot_by_municipalities()
 # plot_box_plot_by_operation()
 # time_by_filling_time()
-# time_by_filling_time(True)
+# time_by_filling_time()
 # histogram_of_applications_per_municipality()
 # process_time_by_actions()
 # sum_by_month()
 # process_time_by_attachment_count()
-process_time_by_running_month()
+# process_time_by_running_month()
+linear_regression()

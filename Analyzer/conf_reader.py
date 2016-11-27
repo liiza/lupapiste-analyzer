@@ -121,7 +121,7 @@ class Conf:
 
     @staticmethod
     def should_add_running_month(params):
-        running_month = params.find(ATTACHMENT_COUNT) >=0
+        running_month = params.find(RUNNING_MONTH) >=0
         if running_month:
             print "add running month"
         return running_month

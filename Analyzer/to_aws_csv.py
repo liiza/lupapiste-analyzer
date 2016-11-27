@@ -4,6 +4,7 @@ from datetime import datetime
 from conf_reader import Conf
 from csv_reader import CSVFile
 from log_entry_analyzer import *
+from data_helpers import inner_join
 
 RESULT_FILE = 'resources/aws_file.csv'
 
@@ -80,7 +81,7 @@ def join(applications, join_file):
 
 
 def get_result_file_header(params):
-    header = [APPLICATION_ID, MUNICIPALITY]
+    header = [APPLICATION_ID, MUNICIPALITY, PER_MONTH]
     if params.get_action_count:
         header.append(ACTION_COUNT)
     if params.application_filling_time:
