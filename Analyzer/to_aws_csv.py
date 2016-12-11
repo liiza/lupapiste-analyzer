@@ -5,6 +5,7 @@ from conf_reader import Conf
 from csv_reader import CSVFile
 from log_entry_analyzer import *
 from data_helpers import inner_join
+from random import shuffle
 
 RESULT_FILE = 'resources/aws_file.csv'
 
@@ -12,7 +13,7 @@ RESULT_FILE = 'resources/aws_file.csv'
 def main():
     conf = Conf()
     params = conf.get_params()
-    csv_file = CSVFile([DATE, APPLICATION_ID, MUNICIPALITY, USER_ID, ROLE, ACTION, TARGET], conf.data_file, ";")
+    csv_file = CSVFile([DATE_TIME, APPLICATION_ID, MUNICIPALITY_ID, USER_ID, ROLE, ACTION, TARGET], conf.data_file, ";")
     applications = to_applications(csv_file, conf, params)
 
     # Write results to csv -file
@@ -70,18 +71,17 @@ def to_applications(csv_file, conf, params):
 
 def join(applications, join_file):
     if join_file != "":
-        columns2 = [APPLICATION_ID, MUNICIPALITY, PERMIT_TYPE, STATE, OPERATION,
+        columns2 = [APPLICATION_ID, MUNICIPALITY_ID, PERMIT_TYPE, STATE, OPERATION,
                     "operationId2", "operationId3", "operations", CREATED_DATE, SUBMITTED_DATE, "sentDate",
                     VERDICT_GIVEN, "canceledDate", "isCancelled", "lon", "lat"]
         csv_file_2 = CSVFile(columns2, join_file, ";")
         applications = inner_join(applications, csv_file_2)
-        write_as_csv(applications, [APPLICATION_ID, MUNICIPALITY, VERDICT_GIVEN, SUBMITTED_DATE], "resources/joined.csv")
-
+        write_as_csv(applications, [APPLICATION_ID, MUNICIPALITY_ID, VERDICT_GIVEN, SUBMITTED_DATE], "resources/joined.csv")
     return applications
 
 
 def get_result_file_header(params):
-    header = [APPLICATION_ID, MUNICIPALITY, PER_MONTH]
+    header = [APPLICATION_ID, MUNICIPALITY_ID, PER_MONTH]
     if params.get_action_count:
         header.append(ACTION_COUNT)
     if params.application_filling_time:
@@ -103,7 +103,9 @@ def get_result_file_header(params):
 
 def write_as_csv(applications, header, name=RESULT_FILE):
     lines = [",".join(header)]
-    for application_id in applications:
+    application_ids = applications.keys()
+    shuffle(application_ids)
+    for application_id in application_ids:
         application = applications[application_id]
         line = ",".join(map(lambda h: str(application[h]), header))
         lines.append(line)

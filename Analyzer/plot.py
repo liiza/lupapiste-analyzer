@@ -16,7 +16,7 @@ def get_avg_per_municipality(csv_file):
 
 
 def get_municipalities(rows):
-    return set(map((lambda x: x[MUNICIPALITY]), rows))
+    return set(map((lambda x: x[MUNICIPALITY_ID]), rows))
 
 
 # applicationId,municipality,filling-time,operation,time-to-verdict
@@ -24,7 +24,7 @@ def get_municipalities(rows):
 
 
 # applicationId,municipality,running-month,operation,time-to-verdict
-csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY, RUNNING_MONTH, OPERATION, TIME_TO_VERDICT], "resources/aws_file_running_month.csv")
+csv_file = CSVFile([APPLICATION_ID, MUNICIPALITY_ID, RUNNING_MONTH, OPERATION, TIME_TO_VERDICT], "resources/aws_file_running_month.csv")
 
 
 def plot_avgs():
@@ -123,7 +123,7 @@ def time_by_filling_time():
     fig = plt.figure()
     ax = fig.add_axes([1.1, 7.1, 2.6, 1.75])
     for index, m in enumerate(municipalities):
-        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        rows = csv_file.get_filtered_rows(MUNICIPALITY_ID, lambda x: x == m)
         filling_times = map(lambda row: to_log(row[FILLING_TIME]), rows)
         times_to_verdict = map(lambda row: to_log(row[TIME_TO_VERDICT]), rows)
         plt.subplot(len(municipalities), 1, index)
@@ -147,7 +147,7 @@ def process_time_by_actions():
         mun_color_map[m] = colors[municipalities.index(m)]
 
     for m in municipalities:
-        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        rows = csv_file.get_filtered_rows(MUNICIPALITY_ID, lambda x: x == m)
         actions = map(lambda row: (row[ACTION_COUNT]), rows)
         times_to_verdict = map(lambda row: (row[TIME_TO_VERDICT]), rows)
         plt.plot(actions, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
@@ -166,7 +166,7 @@ def process_time_by_attachment_count():
         mun_color_map[m] = colors[municipalities.index(m)]
 
     for m in municipalities:
-        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        rows = csv_file.get_filtered_rows(MUNICIPALITY_ID, lambda x: x == m)
         actions = map(lambda row: (row[ATTACHMENT_COUNT]), rows)
         times_to_verdict = map(lambda row: (row[TIME_TO_VERDICT]), rows)
         plt.plot(actions, times_to_verdict, str(mun_color_map[m]) + "o", ms=10)
@@ -182,7 +182,7 @@ def process_time_by_running_month():
     mun_color_map, municipalities = get_municipality_color_map()
 
     for index, m in enumerate(municipalities):
-        rows = csv_file.get_filtered_rows(MUNICIPALITY, lambda x: x == m)
+        rows = csv_file.get_filtered_rows(MUNICIPALITY_ID, lambda x: x == m)
         running_months = map(lambda row: (row[RUNNING_MONTH]), rows)
         process_times = map(lambda row: (row[TIME_TO_VERDICT]), rows)
 
@@ -197,6 +197,7 @@ def process_time_by_running_month():
         ax2.set_ylabel("Applications per month")
 
         ax1.set_xlabel("Running month")
+        ax1.set_title(str(m))
 
     # plt.legend(map(lambda x: mpatches.Patch(color=x), mun_color_map.values()), mun_color_map.keys(), bbox_to_anchor=(1.1, 0.55))
 
@@ -245,5 +246,5 @@ def linear_regression():
 # process_time_by_actions()
 # sum_by_month()
 # process_time_by_attachment_count()
-# process_time_by_running_month()
-linear_regression()
+process_time_by_running_month()
+# linear_regression()

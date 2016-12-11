@@ -20,24 +20,24 @@ class LogEntryAnalyzer:
         for log_entry in log_entries:
             application = self.get_or_create_application(log_entry[APPLICATION_ID], applications, log_entry)
 
-            if START_TIME not in application or application[START_TIME] > log_entry[DATE]:
-                application[START_TIME] = log_entry[DATE]
+            if START_TIME not in application or application[START_TIME] > log_entry[DATE_TIME]:
+                application[START_TIME] = log_entry[DATE_TIME]
 
             if log_entry[ACTION] == SUBMIT_APPLICATION and log_entry[ROLE] == APPLICANT:
                 # Application can be submitted several times we want the first one.
-                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] > log_entry[DATE]:
-                    application[SUBMIT_APPLICATION] = log_entry[DATE]
+                if SUBMIT_APPLICATION not in application or application[SUBMIT_APPLICATION] > log_entry[DATE_TIME]:
+                    application[SUBMIT_APPLICATION] = log_entry[DATE_TIME]
 
             if log_entry[ACTION] == GIVE_STATEMENT and log_entry[ROLE] == AUTHORITY:
-                if GIVE_STATEMENT not in application or application[GIVE_STATEMENT] > log_entry[DATE]:
-                    application[GIVE_STATEMENT] = log_entry[DATE]
+                if GIVE_STATEMENT not in application or application[GIVE_STATEMENT] > log_entry[DATE_TIME]:
+                    application[GIVE_STATEMENT] = log_entry[DATE_TIME]
 
             if self.calculate_attachments and log_entry[ACTION] == "upload-attachment":
                 if ATTACHMENT_COUNT not in application:
                     application[ATTACHMENT_COUNT] = 0
                 application[ATTACHMENT_COUNT] += 1
 
-            if self.get_action_count and (SUBMIT_APPLICATION not in application or log_entry[DATE] < application[SUBMIT_APPLICATION]):
+            if self.get_action_count and (SUBMIT_APPLICATION not in application or log_entry[DATE_TIME] < application[SUBMIT_APPLICATION]):
                 if ACTION_COUNT not in application:
                     application[ACTION_COUNT] = 0
                 application[ACTION_COUNT] += 1
@@ -49,7 +49,7 @@ class LogEntryAnalyzer:
         if application_id in applications:
             return applications[application_id]
         else:
-            application = {APPLICATION_ID: log_entry[APPLICATION_ID], MUNICIPALITY: log_entry[MUNICIPALITY]}
+            application = {APPLICATION_ID: log_entry[APPLICATION_ID], MUNICIPALITY_ID: log_entry[MUNICIPALITY_ID]}
             applications[application_id] = application
             application[ATTACHMENT_COUNT] = 0
             return application
@@ -71,7 +71,7 @@ class LogEntryAnalyzer:
 
     @staticmethod
     def to_municipality_application_pair(applications):
-        return lambda application_id: (applications[application_id][MUNICIPALITY], applications[application_id])
+        return lambda application_id: (applications[application_id][MUNICIPALITY_ID], applications[application_id])
 
     @staticmethod
     def to_applications_with_filling_time(applications, log):
@@ -90,7 +90,7 @@ class LogEntryAnalyzer:
         municipalities_and_applications_counts = LogEntryAnalyzer.get_biggest_municipalities(applications, amount)
         print "Biggest municipalities and applications " + str(municipalities_and_applications_counts)
         municipalities = map(lambda t: t[0], municipalities_and_applications_counts)
-        return {k: v for k, v in applications.iteritems() if str(v[MUNICIPALITY]) in municipalities}
+        return {k: v for k, v in applications.iteritems() if str(v[MUNICIPALITY_ID]) in municipalities}
 
     @staticmethod
     def to_applications_with_start_month(applications):

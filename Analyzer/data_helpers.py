@@ -3,7 +3,7 @@ from itertools import groupby
 from cell_names import *
 from math import log
 
-from cell_names import MUNICIPALITY, MONTH, OPERATION, RUNNING_MONTH, TIME_TO_VERDICT
+from cell_names import MUNICIPALITY_ID, MONTH, OPERATION, RUNNING_MONTH, TIME_TO_VERDICT
 
 
 def get_time_diff_as(applications, start, end, param, log):
@@ -50,7 +50,7 @@ def grouped_by(rows, target, param):
 
 
 def grouped_by_municipality(rows, param):
-    return grouped_by(rows, MUNICIPALITY, param)
+    return grouped_by(rows, MUNICIPALITY_ID, param)
 
 
 def grouped_by_month(rows, param):

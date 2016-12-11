@@ -1,12 +1,12 @@
-DATE = 'date'
-USER_ID = 'userId'
+DATE_TIME = 'datetime'
+USER_ID = 'userid'
 ROLE = 'role'
-MUNICIPALITY = 'municipality'
+MUNICIPALITY_ID = 'municipalityId'
 APPLICATION_ID = 'applicationId'
 ACTION = 'action'
 TARGET = 'target'
 IS_INFO_REQUEST = "isInfoRequest"
-OPERATION = "operation"
+OPERATION = "operationId"
 SUBMIT_APPLICATION = 'submit-application'
 GIVE_STATEMENT = 'give-statement'
 APPLICANT = 'applicant'
@@ -26,8 +26,15 @@ MONTH = "start_month"
 RUNNING_MONTH = "running-month"
 PER_MONTH = "per_month"
 
-date_columns = [DATE, SUBMITTED_DATE, VERDICT_GIVEN, CREATED_DATE]
+date_columns = [DATE_TIME, SUBMITTED_DATE, VERDICT_GIVEN, CREATED_DATE]
 
 
 def is_date(column):
     return column in date_columns
+
+
+SENT_DATE = "sentDate"
+LAT = "lat"
+LON = "lon"
+IS_CANCELLED = "isCancelled"
+CANCELED_DATE = "canceledDate"

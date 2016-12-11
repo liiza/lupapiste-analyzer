@@ -46,7 +46,7 @@ class Conf:
              FILLING_TIME: self.should_get_application_filling_time(self.params),
              "filter": len(self.filter_by_operation(self.filter_by)) > 0,
              "filter_by": self.filter_by_operation(self.filter_by),
-             MUNICIPALITY: self.should_filter_by_municipality(self.params),
+             MUNICIPALITY_ID: self.should_filter_by_municipality(self.params),
              "log": self.should_use_logarithmic_numbers(self.params),
              MONTH: self.should_add_start_month(self.params),
              TIME_TO_VERDICT: self.should_get_time_to_verdict(self.params),
@@ -86,7 +86,7 @@ class Conf:
 
     @staticmethod
     def should_filter_by_municipality(params):
-        filter_by_municipality = params.find(MUNICIPALITY) >= 0
+        filter_by_municipality = params.find(MUNICIPALITY_ID) >= 0
         if filter_by_municipality:
             print "filter by biggest municipalities"
         return filter_by_municipality
@@ -135,7 +135,7 @@ class Params:
         self.application_filling_time = params[FILLING_TIME]
         self.filter_by_operation = params["filter"]
         self.filter_by = params["filter_by"]
-        self.filter_by_municipality = params[MUNICIPALITY]
+        self.filter_by_municipality = params[MUNICIPALITY_ID]
         self.logarithmic_numbers = params["log"]
         self.month = params[MONTH]
         self.time_to_verdict = params[TIME_TO_VERDICT]
